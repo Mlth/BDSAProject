@@ -1,0 +1,15 @@
+C:\Users\super\Documents\Semestre\3rd\Analysis, design and software architecture\Project\BDSAProject\GitInsight\bin\Debug\net6.0\GitInsight.exe
+C:\Users\super\Documents\Semestre\3rd\Analysis, design and software architecture\Project\BDSAProject\GitInsight\bin\Debug\net6.0\GitInsight.deps.json
+C:\Users\super\Documents\Semestre\3rd\Analysis, design and software architecture\Project\BDSAProject\GitInsight\bin\Debug\net6.0\GitInsight.runtimeconfig.json
+C:\Users\super\Documents\Semestre\3rd\Analysis, design and software architecture\Project\BDSAProject\GitInsight\bin\Debug\net6.0\GitInsight.dll
+C:\Users\super\Documents\Semestre\3rd\Analysis, design and software architecture\Project\BDSAProject\GitInsight\bin\Debug\net6.0\GitInsight.pdb
+C:\Users\super\Documents\Semestre\3rd\Analysis, design and software architecture\Project\BDSAProject\GitInsight\obj\Debug\net6.0\GitInsight.csproj.AssemblyReference.cache
+C:\Users\super\Documents\Semestre\3rd\Analysis, design and software architecture\Project\BDSAProject\GitInsight\obj\Debug\net6.0\GitInsight.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\super\Documents\Semestre\3rd\Analysis, design and software architecture\Project\BDSAProject\GitInsight\obj\Debug\net6.0\GitInsight.AssemblyInfoInputs.cache
+C:\Users\super\Documents\Semestre\3rd\Analysis, design and software architecture\Project\BDSAProject\GitInsight\obj\Debug\net6.0\GitInsight.AssemblyInfo.cs
+C:\Users\super\Documents\Semestre\3rd\Analysis, design and software architecture\Project\BDSAProject\GitInsight\obj\Debug\net6.0\GitInsight.csproj.CoreCompileInputs.cache
+C:\Users\super\Documents\Semestre\3rd\Analysis, design and software architecture\Project\BDSAProject\GitInsight\obj\Debug\net6.0\GitInsight.dll
+C:\Users\super\Documents\Semestre\3rd\Analysis, design and software architecture\Project\BDSAProject\GitInsight\obj\Debug\net6.0\refint\GitInsight.dll
+C:\Users\super\Documents\Semestre\3rd\Analysis, design and software architecture\Project\BDSAProject\GitInsight\obj\Debug\net6.0\GitInsight.pdb
+C:\Users\super\Documents\Semestre\3rd\Analysis, design and software architecture\Project\BDSAProject\GitInsight\obj\Debug\net6.0\GitInsight.genruntimeconfig.cache
+C:\Users\super\Documents\Semestre\3rd\Analysis, design and software architecture\Project\BDSAProject\GitInsight\obj\Debug\net6.0\ref\GitInsight.dll
