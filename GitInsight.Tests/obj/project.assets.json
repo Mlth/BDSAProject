@@ -6270,19 +6270,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\super\\.nuget\\packages\\": {}
+    "/Users/mcandersyo/.nuget/packages/": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\super\\Documents\\Semestre\\3rd\\Analysis, design and software architecture\\Project\\BDSAProject\\GitInsight.Tests\\GitInsight.Tests.csproj",
+      "projectUniqueName": "/Users/mcandersyo/Desktop/BDSAProject/GitInsight.Tests/GitInsight.Tests.csproj",
       "projectName": "GitInsight.Tests",
-      "projectPath": "C:\\Users\\super\\Documents\\Semestre\\3rd\\Analysis, design and software architecture\\Project\\BDSAProject\\GitInsight.Tests\\GitInsight.Tests.csproj",
-      "packagesPath": "C:\\Users\\super\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\super\\Documents\\Semestre\\3rd\\Analysis, design and software architecture\\Project\\BDSAProject\\GitInsight.Tests\\obj\\",
+      "projectPath": "/Users/mcandersyo/Desktop/BDSAProject/GitInsight.Tests/GitInsight.Tests.csproj",
+      "packagesPath": "/Users/mcandersyo/.nuget/packages/",
+      "outputPath": "/Users/mcandersyo/Desktop/BDSAProject/GitInsight.Tests/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\super\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        "/Users/mcandersyo/.nuget/NuGet/NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net6.0"
@@ -6294,8 +6294,8 @@
         "net6.0": {
           "targetAlias": "net6.0",
           "projectReferences": {
-            "C:\\Users\\super\\Documents\\Semestre\\3rd\\Analysis, design and software architecture\\Project\\BDSAProject\\GitInsight\\GitInsight.csproj": {
-              "projectPath": "C:\\Users\\super\\Documents\\Semestre\\3rd\\Analysis, design and software architecture\\Project\\BDSAProject\\GitInsight\\GitInsight.csproj"
+            "/Users/mcandersyo/Desktop/BDSAProject/GitInsight/GitInsight.csproj": {
+              "projectPath": "/Users/mcandersyo/Desktop/BDSAProject/GitInsight/GitInsight.csproj"
             }
           }
         }
@@ -6351,7 +6351,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.400\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/6.0.400/RuntimeIdentifierGraph.json"
       }
     }
   }
