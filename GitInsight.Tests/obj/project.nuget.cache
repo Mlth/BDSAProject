@@ -1,10 +1,12 @@
 {
   "version": 2,
-  "dgSpecHash": "RVarrgUfAWl4u9iyBABZzMpuNHvAfEujqT8lvG/qSt1E21wjKC2+azi37mbRN3V5GnS46c47YPJYDfKDdABjBA==",
+  "dgSpecHash": "yzC33+8/MBnj+NdYvxu9S0bslYOnFAkrxXt0homG5/0BugS0gWKeCpyU0ZbrWmEBqlWB5cP5LKcQ6bGbdp5MMA==",
   "success": true,
   "projectFilePath": "C:\\Users\\super\\Documents\\Semestre\\3rd\\Analysis, design and software architecture\\Project\\BDSAProject\\GitInsight.Tests\\GitInsight.Tests.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\super\\.nuget\\packages\\coverlet.collector\\3.1.2\\coverlet.collector.3.1.2.nupkg.sha512",
+    "C:\\Users\\super\\.nuget\\packages\\libgit2sharp\\0.26.2\\libgit2sharp.0.26.2.nupkg.sha512",
+    "C:\\Users\\super\\.nuget\\packages\\libgit2sharp.nativebinaries\\2.0.306\\libgit2sharp.nativebinaries.2.0.306.nupkg.sha512",
     "C:\\Users\\super\\.nuget\\packages\\microsoft.codecoverage\\17.1.0\\microsoft.codecoverage.17.1.0.nupkg.sha512",
     "C:\\Users\\super\\.nuget\\packages\\microsoft.csharp\\4.0.1\\microsoft.csharp.4.0.1.nupkg.sha512",
     "C:\\Users\\super\\.nuget\\packages\\microsoft.net.test.sdk\\17.1.0\\microsoft.net.test.sdk.17.1.0.nupkg.sha512",

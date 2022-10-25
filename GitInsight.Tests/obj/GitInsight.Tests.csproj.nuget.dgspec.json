@@ -52,6 +52,10 @@
               "target": "Package",
               "version": "[3.1.2, )"
             },
+            "libgit2sharp": {
+              "target": "Package",
+              "version": "[0.26.2, )"
+            },
             "xunit": {
               "target": "Package",
               "version": "[2.4.2, )"
@@ -116,6 +120,12 @@
       "frameworks": {
         "net6.0": {
           "targetAlias": "net6.0",
+          "dependencies": {
+            "libgit2sharp": {
+              "target": "Package",
+              "version": "[0.26.2, )"
+            }
+          },
           "imports": [
             "net461",
             "net462",
