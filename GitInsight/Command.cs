@@ -1,6 +1,6 @@
 namespace GitInsight;
 using LibGit2Sharp;
-interface Command{
+public interface Command{
     void execute(Repository repo);
     IVisualizer getVisualizer();
 }

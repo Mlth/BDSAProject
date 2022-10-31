@@ -3,7 +3,7 @@ using LibGit2Sharp;
 
 public class FrequencyCommand : Command {
 
-    List<FrequencyDTO> frequencies = new List<FrequencyDTO>();
+    public List<FrequencyDTO> frequencies {get;} = new List<FrequencyDTO>();
 
     public void execute(Repository repo){
         string specifier = "d";
