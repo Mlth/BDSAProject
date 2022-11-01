@@ -6,7 +6,7 @@ using GitInsight;
 public class GitInsightCMDTest : IDisposable
 {
     Repository repo;
-    string path = @"C:\Users\super\Documents\ITU\Semestre\3rd\BDSA\TestRepo";
+    string path = @".\test-repo\";
 
     public GitInsightCMDTest(){
         Repository.Init(path);
@@ -28,7 +28,7 @@ public class GitInsightCMDTest : IDisposable
         }
         using (File.CreateText(fileNameToBeAdded)){
             Commands.Stage(repo, "*");
-            repo.Commit("First commit", author1, author1, null);
+            repo.Commit("First commit", author1, author1, new CommitOptions(){ AllowEmptyCommit = true });
             command.execute(repo);
         }
 
