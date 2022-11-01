@@ -14,23 +14,16 @@ public class GitInsightCMDTest : IDisposable
     }
 
     [Fact]
-    public void RepoHasOneCommitSoFrequencyCommandContainsOneFrequencyDTO()
+    public void Repo_has_one_commit_so_frequency_command_contains_one_frequencyDTO()
     {
         //Arrange
-        var fileNameToBeAdded = path + @"\test.txt";
         var commitDateTime1 = DateTimeOffset.Now;
         var author1 = new Signature("mlth", "mlth@itu.dk", commitDateTime1);
         var command = (FrequencyCommand)Factory.getCommand("frequency");
 
         //Act
-        if(File.Exists(fileNameToBeAdded)){
-            File.Delete(fileNameToBeAdded);
-        }
-        using (File.CreateText(fileNameToBeAdded)){
-            Commands.Stage(repo, "*");
-            repo.Commit("First commit", author1, author1, new CommitOptions(){ AllowEmptyCommit = true });
-            command.execute(repo);
-        }
+        repo.Commit("First commit", author1, author1, new CommitOptions(){ AllowEmptyCommit = true });
+        command.execute(repo);
 
         //Assert
         Assert.Equal(1, command.frequencies[0].frequency);
