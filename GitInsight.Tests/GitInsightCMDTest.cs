@@ -30,6 +30,23 @@ public class GitInsightCMDTest : IDisposable
         Assert.Equal(commitDateTime1.Date.ToShortDateString(), command.frequencies[0].dateTime);
     }
 
+    //Test that factory returns correct comand
+
+    //Test FrequencyDTO with multiple commits
+
+    //Test FrequencyDTO with no commits
+
+    //Test AuthorDTO with one commit and one author
+
+    //AnDerS
+    //Test AuthorDTO with one commit by multiple authors
+
+    //Test AuthorDTO with multiple commits by one author
+
+    //Test AuthorDTO with multiple commits by multiple authors
+
+    //Test AuthorDTO with no commits
+
     public void Dispose(){
         repo.Dispose();
         DeleteReadOnlyDirectory(path);
