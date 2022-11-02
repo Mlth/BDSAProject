@@ -1,5 +1,6 @@
 namespace GitInsight;
 using LibGit2Sharp;
+using GitInsight.Core;
 
 public class FrequencyCommand : Command {
 

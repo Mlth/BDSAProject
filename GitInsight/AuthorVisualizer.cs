@@ -1,4 +1,5 @@
 namespace GitInsight;
+using GitInsight.Core;
 
 public class AuthorVisualizer : IVisualizer{
     List<AuthorDTO> dtos;

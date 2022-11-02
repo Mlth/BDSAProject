@@ -1,4 +1,5 @@
 namespace GitInsight;
+using GitInsight.Core;
 
 public class FrequencyVisualizer : IVisualizer{
     List<FrequencyDTO> dtos;
