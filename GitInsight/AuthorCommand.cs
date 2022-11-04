@@ -3,7 +3,7 @@ using LibGit2Sharp;
 
 public class AuthorCommand : Command {
 
-    List<AuthorDTO> authors {get;} = new List<AuthorDTO>();
+    public List<AuthorDTO> authors {get;} = new List<AuthorDTO>();
 
     public void execute(Repository repo){
         string specifier = "d";
