@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 public class RepositoryContext : DbContext
 {
-    public DbSet<RepositoryCommitData> CommitData { get; set; }
+    public DbSet<DBCommit> CommitData { get; set; }
 
     public string DbPath { get; }
 
@@ -14,7 +14,7 @@ public class RepositoryContext : DbContext
         DbPath = System.IO.Path.Join(path, "repodata.db");
     }
 
-
+    public virtual DbSet<DBCommit> Commits => Set<DBCommit>();
     // The following configures EF to create a Sqlite database file in the
     // special "local" folder for your platform.
     protected override void OnConfiguring(DbContextOptionsBuilder options)
@@ -22,6 +22,6 @@ public class RepositoryContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<RepositoryCommitData>().ToTable("ReposityCommitData");
+        modelBuilder.Entity<DBCommit>().ToTable("ReposityCommitData");
     }
 }
