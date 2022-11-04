@@ -143,15 +143,93 @@ public class GitInsightCMDTest : IDisposable
         Assert.Equal(commitDateTime1.Date.ToShortDateString(), command.authors[0].frequencies[0].dateTime);
         Assert.Equal(1, command.authors.Count);
     }
+    //Test AuthorDTO with one commit by multiple authors
+    [Fact]
+    public void One_commit_by_multiple_authors_returns_author_command_containing_two_authors_with_one_frequencyDTO_with_frequency_of_one(){
+        //Arrange
+        var commitDateTime1 = DateTimeOffset.Now;
+        var author1 = new Signature("mlth", "mlth@itu.dk", commitDateTime1);
+        var commitDateTime2 = DateTimeOffset.Now;
+        var author2 = new Signature("aarv", "aarv@itu.dk", commitDateTime2);
+        var command = (AuthorCommand)Factory.getCommand("author");
+
+        //Act
+        repo.Commit("First commit", author1, author1, new CommitOptions(){ AllowEmptyCommit = true });
+        repo.Commit("Second commit", author2, author2, new CommitOptions(){ AllowEmptyCommit = true });
+        command.execute(repo);
+
+        //Assert
+        Assert.Equal("aarv", command.authors[0].Author);
+        Assert.Equal("mlth", command.authors[1].Author);
+        Assert.Equal(1, command.authors[0].frequencies[0].frequency);
+        Assert.Equal(1, command.authors[1].frequencies[0].frequency);
+        Assert.Equal(commitDateTime1.Date.ToShortDateString(), command.authors[0].frequencies[0].dateTime);
+        Assert.Equal(commitDateTime2.Date.ToShortDateString(), command.authors[1].frequencies[0].dateTime);
+        Assert.Equal(2, command.authors.Count);
+    }
 
     //AnDerS
-    //Test AuthorDTO with one commit by multiple authors
-
     //Test AuthorDTO with multiple commits by one author
+    [Fact]
+    public void Multiple_commits_by_one_author_returns_author_command_containing_one_author_with_one_frequencyDTO_with_frequency_of_two(){
+        //Arrange
+        var commitDateTime1 = DateTimeOffset.Now;
+        var author1 = new Signature("mlth", "mlth@itu.dk", commitDateTime1);
+        var command = (AuthorCommand)Factory.getCommand("author");
+
+        //Act
+        repo.Commit("First commit", author1, author1, new CommitOptions(){ AllowEmptyCommit = true });
+        repo.Commit("Second commit", author1, author1, new CommitOptions(){ AllowEmptyCommit = true });
+        command.execute(repo);
+
+        //Assert
+        Assert.Equal("mlth", command.authors[0].Author);
+        Assert.Equal(2, command.authors[0].frequencies[0].frequency);
+        Assert.Equal(commitDateTime1.Date.ToShortDateString(), command.authors[0].frequencies[0].dateTime);
+        Assert.Equal(1, command.authors.Count);
+    }
 
     //Test AuthorDTO with multiple commits by multiple authors
+    //Test AuthorDTO with one commit by multiple authors
+    [Fact]
+    public void Multiple_commits_by_multiple_authors_returns_author_command_containing_two_authors_with_one_frequencyDTO_with_frequency_of_two(){
+        //Arrange
+        var commitDateTime1 = DateTimeOffset.Now;
+        var author1 = new Signature("mlth", "mlth@itu.dk", commitDateTime1);
+        var commitDateTime2 = DateTimeOffset.Now;
+        var author2 = new Signature("aarv", "aarv@itu.dk", commitDateTime2);
+        var command = (AuthorCommand)Factory.getCommand("author");
+
+        //Act
+        repo.Commit("First commit", author1, author1, new CommitOptions(){ AllowEmptyCommit = true });
+        repo.Commit("Second commit", author1, author1, new CommitOptions(){ AllowEmptyCommit = true });
+        repo.Commit("Third commit", author2, author2, new CommitOptions(){ AllowEmptyCommit = true });
+        repo.Commit("Fourth commit", author2, author2, new CommitOptions(){ AllowEmptyCommit = true });
+        command.execute(repo);
+
+        //Assert
+        Assert.Equal("aarv", command.authors[0].Author);
+        Assert.Equal("mlth", command.authors[1].Author);
+        Assert.Equal(2, command.authors[0].frequencies[0].frequency);
+        Assert.Equal(2, command.authors[1].frequencies[0].frequency);
+        Assert.Equal(commitDateTime1.Date.ToShortDateString(), command.authors[0].frequencies[0].dateTime);
+        Assert.Equal(commitDateTime2.Date.ToShortDateString(), command.authors[1].frequencies[0].dateTime);
+        Assert.Equal(2, command.authors.Count);
+    }
+    
 
     //Test AuthorDTO with no commits
+    [Fact]
+    public void No_commits_by_zero_authors_returns_author_command_containing_zero_authors_with_zero_frequencyDTO(){
+        //Arrange
+        var command = (AuthorCommand)Factory.getCommand("author");
+
+        //Act
+        command.execute(repo);
+
+        //Assert
+        Assert.Equal(0, command.authors.Count);
+    }
 
     public void Dispose(){
         repo.Dispose();
