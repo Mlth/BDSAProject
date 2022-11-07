@@ -9,6 +9,6 @@ public record DBCommit(){
     public DateTime date {get; set;}
 };
 
-public record DBCommitCreateDTO(int frequency, int repoID, string author, DateTime date);
+public record DBCommitCreateDTO(int frequency, string repoID, string author, DateTime date);
 
-public record DBCommitUpdateDTO(int frequency, int repoID, string author, DateTime date);
+public record DBCommitUpdateDTO(int frequency, string repoID, string author, DateTime date);

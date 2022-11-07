@@ -11,7 +11,7 @@ public class DBCommitRepository
     public DBCommitRepository(RepositoryContext _context){
         this._context = _context;
     }
-    public (Response Response, int UserId) Create(DBCommit DTO)
+    public (Response Response, string repoID) Create(DBCommit DTO)
     {
         DBCommitCreateDTO xd = new DBCommitCreateDTO(DTO.frequency, DTO.repoID, DTO.author, DTO.date);
         /*DBCommitCreateDTO DBC = new()
@@ -44,7 +44,7 @@ public class DBCommitRepository
     public IReadOnlyCollection<DBCommit> ReadAll()
     {
         var list = new List<DBCommit>();
-        foreach (var commit in _context.Commits)
+        foreach (var commit in _context.CommitData)
         {
             list.Add(new DBCommit{
                 frequency = commit.frequency, repoID = commit.repoID, author = commit.author, date= commit.date

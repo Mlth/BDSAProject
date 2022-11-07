@@ -9,8 +9,8 @@ namespace GitInsight.Entities;
         }
 
         public DBRepositoryDTO Find(String repoID){
-            var repo = (from c in _context.Repository
-                 where c.id == repoID
+            var repo = (from c in _context.RepoData
+                 where c.Id == repoID
                  select c).FirstOrDefault();
             if (repo is null)
             {
@@ -18,9 +18,9 @@ namespace GitInsight.Entities;
             }
             else{
                 return new DBRepositoryDTO{
-                    Id = repoID.Id,
-                    state = repo.state;
-                }
+                    Id = repoID,
+                    state = repo.state,
+                };
             }
         }
     }
