@@ -1,7 +1,13 @@
-namespace GitInsight.Entities;
-using GitInsight.Core;
+namespace GitInsight.Core;
 
-public record DBCommit(int frequency, int repoID, string author, DateTime date);
+public record DBCommit(){
+    public int frequency {get; set;}
+    public string repoID {get; set;}
+
+    public string author {get; set;}
+
+    public DateTime date {get; set;}
+};
 
 public record DBCommitCreateDTO(int frequency, int repoID, string author, DateTime date);
 

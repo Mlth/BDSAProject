@@ -1,7 +1,7 @@
 namespace GitInsight;
 class Factory{
     
-    public static Command getCommand(string mode){
+    public static AbstractCommand getCommand(string mode){
         switch (mode){
             case "frequency":
                 return new FrequencyCommand();

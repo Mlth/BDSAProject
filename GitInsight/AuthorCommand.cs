@@ -2,44 +2,46 @@ namespace GitInsight;
 using LibGit2Sharp;
 using GitInsight.Core;
 
-public class AuthorCommand : Command {
+public class AuthorCommand : AbstractCommand {
 
-    List<AuthorDTO> authors {get;} = new List<AuthorDTO>();
+    IEnumerable<DBCommit> commitData {get; set;} = new List<DBCommit>();
 
-    public void execute(Repository repo){
-        string specifier = "d";
-        var commitlog = repo.Commits;
-        var authorMap = new Dictionary<string, Dictionary<string, int>>();
-        foreach (Commit c in commitlog){
-            if (!authorMap.ContainsKey(c.Author.Name)){
-                authorMap.Add(c.Author.Name, new Dictionary<string, int>());
-            }
-            var dateMap = authorMap[c.Author.Name];
-            if (dateMap.ContainsKey(c.Author.When.ToString(specifier))){
-                dateMap[c.Author.When.ToString(specifier)]++;
-            }
-            else{
-                dateMap[c.Author.When.ToString(specifier)] = 1;
-            }
-        }
+    public override IVisualizer getVisualizer(){
 
-        foreach (string author in authorMap.Keys){
-            AuthorDTO dto = new AuthorDTO{
-                Author = author,
-                frequencies = new List<FrequencyDTO>()
-            };
-            foreach (string date in authorMap[author].Keys){
+        return new AuthorVisualizer(from c in commitData
+                    group c by c.author into group1
+                    select new AuthorDTO{author = group1.Key, frequencies = new List<FrequencyDTO>().Concat(
+                        from c in group1
+                        group c by c.date into group2
+                        select new FrequencyDTO {date = group2.Key, frequency = group2.Sum(x => x.frequency)})});
+    }
 
-                dto.frequencies.Add(new FrequencyDTO{
-                dateTime = date,
-                frequency = authorMap[author][date]});
-            }
-            authors.Add(dto);
+    protected override void analyseRepo(Repository repo)
+    {
+        commitData = (from c in repo.Commits
+                    group c by c.Author.Name into group1
+                    from group2 in (
+                        from d in group1
+                        group d by d.Author.When.ToString("d")
+                    )
+                    from e in group2
+                    select new DBCommit{author = e.Author.Name, date = e.Author.When.Date, frequency = group2.Count()}).DistinctBy(x => (x.date, x.author));
+        foreach (var c in commitData){
+            Console.WriteLine(c);
         }
     }
 
-    public IVisualizer getVisualizer(){
-        return new AuthorVisualizer(authors);
+    protected override void fetchData(RepositoryContext context)
+    {
+        DBCommitRepository repository = new DBCommitRepository(context);
+        commitData = repository.ReadAll();
     }
 
+    protected override void saveToDatabase(RepositoryContext context)
+    {
+        DBCommitRepository repository = new DBCommitRepository(context);
+        foreach (var commit in commitData){
+            repository.CreateOrUpdate(commit);
+        }
+    }
 }

@@ -1,31 +1,42 @@
 namespace GitInsight;
 using LibGit2Sharp;
 using GitInsight.Core;
+using GitInsight.Entities;
 
-public class FrequencyCommand : Command {
+public class FrequencyCommand : AbstractCommand {
 
-    List<FrequencyDTO> frequencies = new List<FrequencyDTO>();
+    IEnumerable<DBCommit> commitData = new List<DBCommit>();
 
-    public void execute(Repository repo){
-        string specifier = "d";
-        var commitlog = repo.Commits;
-        var dateMap = new Dictionary<string, int>();
-        foreach (Commit c in commitlog){
-                if (dateMap.ContainsKey(c.Author.When.ToString(specifier))){
-                    dateMap[c.Author.When.ToString(specifier)]++;
-                }
-                else{
-                    dateMap[c.Author.When.ToString(specifier)] = 1;
-                }
-        }
-        foreach (string date in dateMap.Keys){
-            frequencies.Add(new FrequencyDTO{
-                dateTime = date,
-                frequency = dateMap[date]});
-        }
+    public override IVisualizer getVisualizer(){
+        return new FrequencyVisualizer((from c in commitData
+                group c by c.date into group1
+                select new FrequencyDTO {date = group1.Key, frequency = group1.Sum(x => x.frequency)}).ToList());
     }
 
-    public IVisualizer getVisualizer(){
-        return new FrequencyVisualizer(frequencies);
+    protected override void analyseRepo(Repository repo)
+    {
+        commitData = (from c in repo.Commits
+                    group c by c.Author.Name into group1
+                    from group2 in (
+                        from d in group1
+                        group d by d.Author.When.ToString("d")
+                    )
+                    from e in group2
+                    select new DBCommit{author = e.Author.Name, date = e.Author.When.Date, frequency = group2.Count()}).DistinctBy(x => (x.date, x.author));
+    }
+
+    protected override void fetchData(RepositoryContext context)
+    {
+        DBCommitRepository repository = new DBCommitRepository(context);
+        commitData = repository.ReadAll();
+    }
+
+
+    protected override void saveToDatabase(RepositoryContext context)
+    {
+        DBCommitRepository repository = new DBCommitRepository(context);
+        foreach (var commit in commitData){
+            repository.CreateOrUpdate(commit);
+        }
     }
 }

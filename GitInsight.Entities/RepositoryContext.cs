@@ -5,23 +5,31 @@ public class RepositoryContext : DbContext
 {
     public DbSet<DBCommit> CommitData { get; set; }
 
-    public string DbPath { get; }
+    public DbSet<DBRepository> RepoData { get; set; }
 
     public RepositoryContext(DbContextOptions<RepositoryContext> options) : base(options)
     {
-        var folder = Environment.SpecialFolder.LocalApplicationData;
-        var path = Environment.GetFolderPath(folder);
-        DbPath = System.IO.Path.Join(path, "repodata.db");
+        
+    
     }
-
-    public virtual DbSet<DBCommit> Commits => Set<DBCommit>();
-    // The following configures EF to create a Sqlite database file in the
-    // special "local" folder for your platform.
-    protected override void OnConfiguring(DbContextOptionsBuilder options)
-        => options.UseSqlite($"Data Source={DbPath}");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
-    {
-        modelBuilder.Entity<DBCommit>().ToTable("ReposityCommitData");
-    }
+        {
+            modelBuilder.Entity<DBCommit>(entity =>
+            {
+                entity.Property(e => e.author).HasMaxLength(100).IsRequired();
+                entity.Property(e => e.frequency).IsRequired();
+                entity.Property(e => e.date).IsRequired();
+                entity.Property(e => e.repoID).HasMaxLength(100).IsRequired();
+                entity.HasKey(e => new { e.author, e.date, e.repoID});
+            });
+
+            modelBuilder.Entity<DBRepository>(entity =>
+            {
+                entity.Property(e => e.Id).HasMaxLength(50).IsRequired();
+                entity.Property(e => e.state).HasMaxLength(50).IsRequired();
+                entity.HasMany(s => s.commits);
+                entity.HasKey(e => new { e.Id});
+            });
+        }
 }

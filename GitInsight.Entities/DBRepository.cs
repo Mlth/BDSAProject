@@ -3,7 +3,9 @@ using GitInsight.Core;
 
 public record DBRepository
 {
-    public int Id { get; set; }
+    public string Id { get; set; }
 
-    public int state { get; set; }
+    public string state { get; set; }
+
+    public IEnumerable<DBCommit> commits {get; set;}
 }

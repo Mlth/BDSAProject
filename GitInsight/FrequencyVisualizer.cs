@@ -7,7 +7,7 @@ public class FrequencyVisualizer : IVisualizer{
         this.dtos = dtos;
     }     public void visualize(){
         foreach (FrequencyDTO dto in dtos){
-            Console.WriteLine(dto.frequency + " " + dto.dateTime);
+            Console.WriteLine(dto.frequency + " " + dto.date.ToShortDateString());
         }
     }
 }
