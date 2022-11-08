@@ -1,7 +1,6 @@
-using GitInsight.Core;
+using GitInsight.Entities.DTOS;
 using System.Collections.ObjectModel;
 using GitInsight;
-using GitInsight.Core;
 
 namespace GitInsight.Entities;
 
@@ -11,22 +10,19 @@ public class DBCommitRepository
     public DBCommitRepository(RepositoryContext _context){
         this._context = _context;
     }
-    public (Response Response, string repoID) Create(DBCommit DTO)
+    public Response Create(DBCommit entity)
     {
-        DBCommitCreateDTO xd = new DBCommitCreateDTO(DTO.frequency, DTO.repoID, DTO.author, DTO.date);
-        /*DBCommitCreateDTO DBC = new()
-        {
-            frequency = DTO.frequency,
-            repoID = DTO.repoID,
-            author = DTO.author,
-            date = DTO.date,
-        };*/
-        return (Response.Created, DTO.repoID);
+    
+        _context.CommitData.Add(entity);
+        _context.SaveChanges();
+        return Response.Created;
     }
+
+    
 
     public Response CreateOrUpdate(DBCommit commit){
         if (Read(commit) is null){
-            return Create(commit).Response;
+            return Create(commit);
         }
         return Update(commit);
     }
@@ -38,7 +34,14 @@ public class DBCommitRepository
 
     public DBCommit Read(DBCommit commit)
     {
-        throw new NotImplementedException();
+        var entity = (from c in _context.CommitData
+                 where c.author == commit.author && c.date == commit.date && c.repo.name == commit.repo.name 
+                 select c).FirstOrDefault();
+        if (entity is null)
+        {
+            return null;
+        }
+        return entity;
     }
 
     public IReadOnlyCollection<DBCommit> ReadAll()
@@ -46,22 +49,18 @@ public class DBCommitRepository
         var list = new List<DBCommit>();
         foreach (var commit in _context.CommitData)
         {
-            list.Add(new DBCommit{
-                frequency = commit.frequency, repoID = commit.repoID, author = commit.author, date= commit.date
-            });
+            list.Add(commit);
         }
         return new ReadOnlyCollection<DBCommit>(list);
     }
 
-    public Response Update(DBCommit DBC)
-    {
-
-        var entry = _context.CommitData.Where(a => a.author == DBC.author).First();
-        if (entry == null) return Response.NotFound;
-
-        //entry.frequency = DBC.frequency;
-        //entry.repoID = DBC.repoID;
-        throw new NotImplementedException();
-        //return Response.Updated;
+    public Response Update(DBCommit entity)
+    {   var commit = Read(entity);
+        if (commit is null){
+            return Response.NotFound;
+        }
+        commit = entity;
+        _context.SaveChanges();
+        return Response.Updated;
     }
 }

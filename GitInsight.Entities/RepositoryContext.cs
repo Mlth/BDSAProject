@@ -9,7 +9,6 @@ public class RepositoryContext : DbContext
 
     public RepositoryContext(DbContextOptions<RepositoryContext> options) : base(options)
     {
-        
     
     }
 
@@ -18,18 +17,16 @@ public class RepositoryContext : DbContext
             modelBuilder.Entity<DBCommit>(entity =>
             {
                 entity.Property(e => e.author).HasMaxLength(100).IsRequired();
-                entity.Property(e => e.frequency).IsRequired();
                 entity.Property(e => e.date).IsRequired();
-                entity.Property(e => e.repoID).HasMaxLength(100).IsRequired();
-                entity.HasKey(e => new { e.author, e.date, e.repoID});
+                entity.Property(e => e.repo).IsRequired();
+                entity.HasKey(e => new { e.author, e.date, e.repo});
             });
 
             modelBuilder.Entity<DBRepository>(entity =>
             {
-                entity.Property(e => e.Id).HasMaxLength(50).IsRequired();
+                entity.Property(e => e.name).HasMaxLength(50).IsRequired();
                 entity.Property(e => e.state).HasMaxLength(50).IsRequired();
-                entity.HasMany(s => s.commits);
-                entity.HasKey(e => new { e.Id});
+                entity.HasMany(s => s.commits).WithOne(s => s.repo);
             });
         }
 }

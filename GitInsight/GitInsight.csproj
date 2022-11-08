@@ -6,7 +6,6 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\GitInsight.Core\GitInsight.Core.csproj"/>
     <ProjectReference Include="..\GitInsight.Entities\GitInsight.Entities.csproj"/>
   </ItemGroup>
   <ItemGroup>

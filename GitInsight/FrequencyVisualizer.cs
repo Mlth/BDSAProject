@@ -1,9 +1,9 @@
 namespace GitInsight;
-using GitInsight.Core;
+using GitInsight.Entities.DTOS;
 
 public class FrequencyVisualizer : IVisualizer{
-    List<FrequencyDTO> dtos;
-    public FrequencyVisualizer(List<FrequencyDTO> dtos){
+    IEnumerable<FrequencyDTO> dtos;
+    public FrequencyVisualizer(IEnumerable<FrequencyDTO> dtos){
         this.dtos = dtos;
     }     public void visualize(){
         foreach (FrequencyDTO dto in dtos){

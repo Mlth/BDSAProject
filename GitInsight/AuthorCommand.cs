@@ -1,47 +1,52 @@
 namespace GitInsight;
 using LibGit2Sharp;
-using GitInsight.Core;
+using GitInsight.Entities.DTOS;
+using GitInsight.Entities;
 
 public class AuthorCommand : AbstractCommand {
 
-    IEnumerable<DBCommit> commitData {get; set;} = new List<DBCommit>();
+    public IEnumerable<AuthorDTO> commitData {get; set;} = new List<AuthorDTO>();
 
     public override IVisualizer getVisualizer(){
 
-        return new AuthorVisualizer(from c in commitData
-                    group c by c.author into group1
-                    select new AuthorDTO{author = group1.Key, frequencies = new List<FrequencyDTO>().Concat(
-                        from c in group1
-                        group c by c.date into group2
-                        select new FrequencyDTO {date = group2.Key, frequency = group2.Sum(x => x.frequency)})});
+        return new AuthorVisualizer(commitData);
     }
 
-    protected override void analyseRepo(Repository repo)
+    protected override void analyseRepoAndSave(Repository repo, RepositoryContext context)
     {
-        commitData = (from c in repo.Commits
-                    group c by c.Author.Name into group1
-                    from group2 in (
-                        from d in group1
-                        group d by d.Author.When.ToString("d")
-                    )
-                    from e in group2
-                    select new DBCommit{author = e.Author.Name, date = e.Author.When.Date, frequency = group2.Count()}).DistinctBy(x => (x.date, x.author));
-        foreach (var c in commitData){
-            Console.WriteLine(c);
-        }
+        IEnumerable<DBCommit> commits = from c in repo.Commits
+                        select new DBCommit{author = c.Author.Name, date = c.Author.When.Date, repo = new DBRepository{name = repoID, state = repo.Commits.Last().Id.RawId.ToString()}};
+        saveToDatabase(context, commits);
     }
 
     protected override void fetchData(RepositoryContext context)
     {
         DBCommitRepository repository = new DBCommitRepository(context);
-        commitData = repository.ReadAll();
+        IEnumerable<DBCommit> commits = repository.ReadAll();
+        commitData = from c in commits
+                    group c by c.author into group1
+                    select new AuthorDTO{author = group1.Key, frequencies = new List<FrequencyDTO>().Concat(
+                        from c in group1
+                        group c by c.date into group2
+                        select new FrequencyDTO {date = group2.Key, frequency = group2.Count()})};
     }
 
-    protected override void saveToDatabase(RepositoryContext context)
+    protected void saveToDatabase(RepositoryContext context, IEnumerable<DBCommit> commits)
     {
         DBCommitRepository repository = new DBCommitRepository(context);
-        foreach (var commit in commitData){
+        foreach (var commit in commits){
             repository.CreateOrUpdate(commit);
         }
+    }
+
+    public override void testLogicWithoutContext(Repository repo){
+        IEnumerable<DBCommit> commits = from c in repo.Commits
+                                        select new DBCommit{author = c.Author.Name, date = c.Author.When.Date, repo = new DBRepository{name = repoID, state = repo.Commits.Last().Id.RawId.ToString()}};
+        commitData = from c in commits
+                    group c by c.author into group1
+                    select new AuthorDTO{author = group1.Key, frequencies = new List<FrequencyDTO>().Concat(
+                        from c in group1
+                        group c by c.date into group2
+                        select new FrequencyDTO {date = group2.Key, frequency = group2.Count()})};
     }
 }
