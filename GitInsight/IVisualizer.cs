@@ -1,5 +1,6 @@
 namespace GitInsight;
 
-public interface IVisualizer{
+public interface IVisualizer
+{
     void visualize();
 }
