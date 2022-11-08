@@ -23,13 +23,28 @@ using GitInsight.Entities.DTOS;
 
                 return Response.Created;
             }
+                return Response.Conflict;
+            
+        }
+
+        public (Response reponse, DBRepositoryDTO dto) Update(DBRepositoryDTO dto) {
+            var entity = Read(dto);
+
+            if (entity is null)
+            {
+                return (Response.NotFound, null);
+            }
             else
             {
-                return Response.Conflict;
+                entity.name = dto.name;
+                entity.state = dto.state;
+                entity.commits = dto.commits;
+                _context.SaveChanges();
+                return (Response.Updated, new DBRepositoryDTO {name = entity.name, state = entity.state, commits = entity.commits});
             }
         }
 
-        public DBRepositoryDTO Read(DBRepositoryDTO dto){
+        public DBRepository Read(DBRepositoryDTO dto){
             var repo = (from c in _context.RepoData
                  where c.name == dto.name
                  select c).FirstOrDefault();
@@ -38,10 +53,20 @@ using GitInsight.Entities.DTOS;
                 return null;
             }
             else{
-                return new DBRepositoryDTO{
-                    name = repo.name,
-                    state = repo.state,
-                };
+                return repo;
+            };
+        }
+
+        public IEnumerable<DBCommit> ReadAllCommits(DBRepositoryDTO dto){
+            var repo = (from c in _context.RepoData
+                 where c.name == dto.name
+                 select c).FirstOrDefault();
+            if (repo is null)
+            {
+                return null;
             }
+            else{
+                return repo.commits;
+            };
         }
     }

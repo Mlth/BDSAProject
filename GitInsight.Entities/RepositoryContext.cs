@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 public class RepositoryContext : DbContext
 {
-    public DbSet<DBCommit> CommitData { get; set; }
+    //public DbSet<DBCommit> CommitData { get; set; }
 
     public DbSet<DBRepository> RepoData { get; set; }
 
@@ -18,8 +18,7 @@ public class RepositoryContext : DbContext
             {
                 entity.Property(e => e.author).HasMaxLength(100).IsRequired();
                 entity.Property(e => e.date).IsRequired();
-                entity.Property(e => e.repo).IsRequired();
-                entity.HasKey(e => new { e.author, e.date, e.repo});
+                //entity.Property(e => e.repo).IsRequired();
             });
 
             modelBuilder.Entity<DBRepository>(entity =>

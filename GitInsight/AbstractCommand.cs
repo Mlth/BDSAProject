@@ -16,8 +16,19 @@ public abstract class AbstractCommand{
         }
     }
 
+    public IEnumerable<DBCommit> getDBCommits(Repository repo){
+        IEnumerable<DBCommit> commits = from c in repo.Commits
+                        select new DBCommit{author = c.Author.Name, date = c.Author.When.Date, repo = new DBRepository{name = repoID, state = repo.Commits.Last().Id.RawId.ToString()}};
+        return commits;
+    }
+
+    protected void analyseRepoAndSave(Repository repo, RepositoryContext context)
+    {
+        IEnumerable<DBCommit> commits = getDBCommits(repo);
+        DBRepoRepository repository = new DBRepoRepository(context);
+        repository.Update(new DBRepositoryDTO{name = repoID, state = repo.Commits.Last().Id.RawId.ToString(), commits = commits});
+    }
     protected abstract void fetchData(RepositoryContext context);
-    protected abstract void analyseRepoAndSave(Repository repo, RepositoryContext context);
     protected bool needsUpdate(Repository repo, RepositoryContext context){
         
         var repository = new DBRepoRepository(context);
@@ -28,12 +39,11 @@ public abstract class AbstractCommand{
             }
             return true;
         }
-        repository.Create(new DBRepositoryDTO{name = repoID, state = repo.Commits.Last().Id.RawId.ToString()});
-        return true;
-        
+        repository.Create(new DBRepositoryDTO{name = repoID, state = repo.Commits.Last().Id.RawId.ToString(), commits = getDBCommits(repo)});
+        return false;
     }
 
     public abstract IVisualizer getVisualizer();
 
-    public abstract void testLogicWithoutContext(Repository repo);
+    public abstract void execute(Repository repo);
 }

@@ -16,7 +16,7 @@ public class Program
         var repository = new Repository(args[0]);
         var command = Factory.getCommand(args[1]);
         //command.template(repository, context);
-        command.testLogicWithoutContext(repository);
+        command.execute(repository);
         var visualizer = command.getVisualizer();
         visualizer.visualize();
     }

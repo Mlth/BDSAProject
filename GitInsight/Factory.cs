@@ -1,5 +1,5 @@
 namespace GitInsight;
-class Factory{
+public class Factory{
     
     public static AbstractCommand getCommand(string mode){
         switch (mode){
