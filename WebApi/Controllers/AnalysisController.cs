@@ -20,17 +20,19 @@ public class AnalysisController : ControllerBase
         Console.WriteLine(repositoryPathExample);
 
         var cloneOptions = new CloneOptions { BranchName = "master", Checkout = true };
-        var path = @"C:\Users\anton\Downloads\mypath";
-        var cloneResult = Repository.Clone( repositoryPathExample, path );
+        //var path = @"C:\Users\anton\Downloads\mypath";
+        var path = Directory.GetCurrentDirectory();
+        var newDir = path + "/mypath";
+        var cloneResult = Repository.Clone( repositoryPathExample, newDir );
         
         WebProgram webProgram = new WebProgram();
         var list = webProgram.GetAnalysisList(repositoryPath, command); 
 
-        deleteDirectory(path);
+        deleteDirectory(newDir);
         
         return list;
     }
-    
+
     public static void deleteDirectory(string path){
 
         foreach (var subdirectory in Directory.EnumerateDirectories(path)) 
