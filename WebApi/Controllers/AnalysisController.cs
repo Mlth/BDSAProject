@@ -20,11 +20,17 @@ public class AnalysisController : ControllerBase
         Console.WriteLine(repositoryPathExample);
 
         var cloneOptions = new CloneOptions { BranchName = "master", Checkout = true };
-        var cloneResult = Repository.Clone( repositoryPathExample, @"C:\Users\anton\Downloads\mypath" );
+        var path = @"C:\Users\anton\Downloads\mypath";
+        var cloneResult = Repository.Clone( repositoryPathExample, path );
+        using (var repo = new LibGit2Sharp.Repository(path)){
+            repo.Dispose();
+        }
+        Directory.DeleteFolder(path);
 
         WebProgram webProgram = new WebProgram();
         var list = webProgram.GetAnalysisList(repositoryPath, command); 
 
+        
         return list;
     }
 }
