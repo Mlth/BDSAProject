@@ -12,10 +12,15 @@ public class AnalysisController : ControllerBase
     [HttpGet("{github_user}/{repository_name}/{command}")]
     public List<string> Get(string github_user, string repository_name, string command)
     {
-        var repositoryPath = "https://github.com/" + github_user + "/" + repository_name;
-        // var repositoryPath = "/Users/anton/Desktop/BDSAProject/";
+        // https://localhost:7024/analysis/Mlth/BDSAProject/author
 
-        Console.WriteLine(repositoryPath);
+        var repositoryPathExample = "https://github.com/" + github_user + "/" + repository_name + ".git";
+        var repositoryPath = "/Users/anton/Desktop/BDSAProject/";
+
+        Console.WriteLine(repositoryPathExample);
+
+        var cloneOptions = new CloneOptions { BranchName = "master", Checkout = true };
+        var cloneResult = Repository.Clone( repositoryPathExample, @"C:\Users\anton\Downloads\mypath" );
 
         WebProgram webProgram = new WebProgram();
         var list = webProgram.GetAnalysisList(repositoryPath, command); 
