@@ -15,12 +15,13 @@ public class AuthorAnalysis : IAnalysis
     {
         foreach (AuthorDTO dto in dtos)
         {
-            analysis.Add(dto.Author);
+            analysis.Add("@" + dto.Author);
             foreach (FrequencyDTO freq in dto.frequencies)
             {
                 analysis.Add("----" + freq.frequency + " " + freq.dateTime);
             }
         }
+
         return analysis;
     }
 }
