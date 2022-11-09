@@ -7,7 +7,7 @@ public class DBCommitRepositoryTests : IDisposable
     private readonly DBRepoRepository repoRepository;
 
     Repository repo;
-    string path = @".\test-repo\";
+    string path = @".github.com\test-repo\";
 
     public DBCommitRepositoryTests(){
         Repository.Init(path);
@@ -21,6 +21,25 @@ public class DBCommitRepositoryTests : IDisposable
         repoRepository = new DBRepoRepository(context);
         //Adding first DBRepo to DB
     }
+
+    [Fact]
+    public void One_commit_by_one_author_returns_frequency_command_containing_one_frequencyDTO(){
+        //Arrange
+        var commitDateTime1 = DateTimeOffset.Now;
+        var author1 = new Signature("mlth", "mlth@itu.dk", commitDateTime1);
+        var command = (FrequencyCommand)Factory.getCommand("frequency");
+
+        //Act
+        repo.Commit("First commit", author1, author1, new CommitOptions(){ AllowEmptyCommit = true });
+        Console.WriteLine(repo.Commits.FirstOrDefault().Author.Name);
+        command.template(repo, context);
+
+        //Assert
+        Assert.Equal(1, command.frequencies.ToArray()[0].frequency);
+        Assert.Equal(commitDateTime1.Date.ToShortDateString(), command.frequencies.ToArray()[0].date.ToShortDateString());
+        Assert.Equal(1, command.frequencies.Count());
+    }
+    
 
 
 

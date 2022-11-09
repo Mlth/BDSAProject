@@ -8,8 +8,14 @@ public class RepositoryContextFactory : IDesignTimeDbContextFactory<RepositoryCo
 {
     public RepositoryContext CreateDbContext(string[] args)
     {
+        string _conStr = @"
+            Server=localhost,1433;
+            Database=GitInsightDB;
+            User Id=SA;
+            Password=<YourStrong@Passw0rd>;";
+
         var optionsBuilder = new DbContextOptionsBuilder<RepositoryContext>();
-        optionsBuilder.UseSqlite("Data Source=repodata.db");
+        optionsBuilder.UseSqlServer(_conStr);
 
         return new RepositoryContext(optionsBuilder.Options);
     }

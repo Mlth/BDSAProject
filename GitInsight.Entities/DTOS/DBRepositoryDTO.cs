@@ -5,6 +5,6 @@ public record DBRepositoryDTO{
 
     public string state {get; set;}
 
-    public IEnumerable<DBCommit> commits {get; set;}
+    public ICollection<DBCommit> commits {get; set;}
 
 }

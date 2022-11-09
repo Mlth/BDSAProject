@@ -1,5 +1,7 @@
 namespace GitInsight.Entities;
 using GitInsight.Entities.DTOS;
+using Microsoft.EntityFrameworkCore;
+using System.Linq;
     public class DBRepoRepository
     {
         private RepositoryContext _context;
@@ -16,7 +18,7 @@ using GitInsight.Entities.DTOS;
 
             if (entity is null)
             {
-                entity = new DBRepository{name = dto.name, state = dto.state};
+                entity = new DBRepository{name = dto.name, state = dto.state, commits = dto.commits};
 
                 _context.RepoData.Add(entity);
                 _context.SaveChanges();
@@ -57,10 +59,13 @@ using GitInsight.Entities.DTOS;
             };
         }
 
-        public IEnumerable<DBCommit> ReadAllCommits(DBRepositoryDTO dto){
-            var repo = (from c in _context.RepoData
-                 where c.name == dto.name
-                 select c).FirstOrDefault();
+        public ICollection<DBCommit> ReadAllCommits(DBRepositoryDTO dto){
+            // var repo = (from c in _context.RepoData
+            //      where c.name == dto.name
+            //      select c).FirstOrDefault();
+
+            var repo = _context.RepoData.Where(x => x.name == dto.name).Include(x => x.commits).FirstOrDefault();
+
             if (repo is null)
             {
                 return null;
