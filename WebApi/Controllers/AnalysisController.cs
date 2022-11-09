@@ -22,15 +22,28 @@ public class AnalysisController : ControllerBase
         var cloneOptions = new CloneOptions { BranchName = "master", Checkout = true };
         var path = @"C:\Users\anton\Downloads\mypath";
         var cloneResult = Repository.Clone( repositoryPathExample, path );
-        using (var repo = new LibGit2Sharp.Repository(path)){
-            repo.Dispose();
-        }
-        Directory.DeleteFolder(path);
-
+        
         WebProgram webProgram = new WebProgram();
         var list = webProgram.GetAnalysisList(repositoryPath, command); 
 
+        deleteDirectory(path);
         
         return list;
+    }
+    
+    public static void deleteDirectory(string path){
+
+        foreach (var subdirectory in Directory.EnumerateDirectories(path)) 
+    {
+        deleteDirectory(subdirectory);
+    }
+    foreach (var fileName in Directory.EnumerateFiles(path))
+    {
+        var fileInfo = new FileInfo(fileName);
+        fileInfo.Attributes = FileAttributes.Normal;
+        fileInfo.Delete();
+    }
+        var dir = new DirectoryInfo(path);
+        dir.Delete(true);
     }
 }
