@@ -39,6 +39,6 @@ public class FrequencyCommand : Command
 
     public IAnalysis getAnalysis()
     {
-        return new FrequencyAnalysis(frequencies);
+         return new FrequencyAnalysis(frequencies);
     }
 }

@@ -30,7 +30,7 @@ public class GitInsightCMDTest : IDisposable
         try{
             Factory.getCommand(exceptionString);
             Assert.Fail("Exception was not thrown when using invalid string for Factory.GetCommand");
-        } catch(NotImplementedException e){ }
+        } catch (NotImplementedException) { }
     }
 
     [Fact]

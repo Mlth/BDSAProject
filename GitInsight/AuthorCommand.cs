@@ -1,9 +1,9 @@
-namespace GitInsight;
 using LibGit2Sharp;
+
+namespace GitInsight;
 
 public class AuthorCommand : Command
 {
-
     public List<AuthorDTO> authors { get; } = new List<AuthorDTO>();
 
     public void execute(Repository repo)

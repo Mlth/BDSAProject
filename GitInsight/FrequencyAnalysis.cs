@@ -1,22 +1,38 @@
+using System.Text.Json;
+
 namespace GitInsight;
+
+public class FrequencyObject
+{
+    public List<string>? Frequencies { get; set; }
+}
 
 public class FrequencyAnalysis : IAnalysis
 {
     List<FrequencyDTO> dtos;
-    List<string> analysis;
 
     public FrequencyAnalysis(List<FrequencyDTO> dtos)
     {
         this.dtos = dtos;
-        analysis = new List<string>();
     }
 
-    public List<string> analyze()
+    public string analyze()
     {
+        var tempList = new List<string>();
+
         foreach (FrequencyDTO dto in dtos)
         {
-            analysis.Add(dto.frequency + " " + dto.dateTime);
+            tempList.Add(dto.frequency + " " + dto.dateTime);
         }
-        return analysis;
+
+        var frequencyObject = new FrequencyObject
+        {
+            Frequencies = tempList
+        };
+
+        var options = new JsonSerializerOptions { WriteIndented = true };
+        var jsonString = JsonSerializer.Serialize(frequencyObject, options);
+
+        return jsonString;
     }
 }
