@@ -5,9 +5,12 @@ namespace GitInsight;
 public abstract class AbstractCommand{
     public String repoID {get; set;}
     public void template(Repository repo, RepositoryContext context){
-        repoID = repo.Commits.FirstOrDefault().Sha;
+        if (!repo.Commits.Any()){
+            throw new NoCommitsException("The repository contains no commits");
+        }
+        repoID = repo.Commits.LastOrDefault().Sha;
         if (needsUpdate(repo, context)){
-            analyseRepoAndSave(repo, context);
+            analyseRepoAndUpdate(repo, context);
         }
         else{
             fetchData(context);
@@ -15,30 +18,27 @@ public abstract class AbstractCommand{
     }
 
     public ICollection<DBCommit> getDBCommits(Repository repo){
-        ICollection<DBCommit> commits = (from c in repo.Commits
-                        select new DBCommit{author = c.Author.Name, date = c.Author.When.Date, repo = new DBRepository{name = repoID, state = repo.Commits.Last().Id.RawId.ToString()}}).ToList();
-        Console.WriteLine(commits.Count());
-        return commits;
+        return (from c in repo.Commits
+                        select new DBCommit{author = c.Author.Name, date = c.Author.When.Date, repo = new DBRepository{name = repoID, state = repo.Commits.First().Sha}}).ToList();
     }
 
-    protected void analyseRepoAndSave(Repository repo, RepositoryContext context)
+    public void analyseRepoAndUpdate(Repository repo, RepositoryContext context)
     {
-        ICollection<DBCommit> commits = getDBCommits(repo);
         DBRepoRepository repository = new DBRepoRepository(context);
-        repository.Update(new DBRepositoryDTO{name = repoID, state = repo.Commits.Last().Id.RawId.ToString(), commits = commits});
+        repository.Update(new DBRepositoryDTO{name = repoID, state = repo.Commits.First().Sha, commits = getDBCommits(repo)});
     }
-    protected abstract void fetchData(RepositoryContext context);
-    protected bool needsUpdate(Repository repo, RepositoryContext context){
+    public abstract void fetchData(RepositoryContext context);
+    public bool needsUpdate(Repository repo, RepositoryContext context){
         
         var repository = new DBRepoRepository(context);
         var entity = repository.Read(new DBRepositoryDTO{name = repoID});
         if (entity is not null){
-            if (repo.Commits.Last().Id.RawId.ToString() == entity.state){
+            if (repo.Commits.First().Sha == entity.state){
                 return false;
             }
             return true;
         }
-        repository.Create(new DBRepositoryDTO{name = repoID, state = repo.Commits.Last().Id.RawId.ToString(), commits = getDBCommits(repo)});
+        repository.Create(new DBRepositoryDTO{name = repoID, state = repo.Commits.First().Sha, commits = getDBCommits(repo)});
         return false;
     }
 

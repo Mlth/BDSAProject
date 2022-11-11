@@ -12,7 +12,7 @@ public class AuthorCommand : AbstractCommand {
         return new AuthorVisualizer(authors);
     }
 
-    protected override void fetchData(RepositoryContext context)
+    public override void fetchData(RepositoryContext context)
     {
         var repository = new DBRepoRepository(context);
         IEnumerable<DBCommit> commits = repository.ReadAllCommits(new DBRepositoryDTO{name = repoID});

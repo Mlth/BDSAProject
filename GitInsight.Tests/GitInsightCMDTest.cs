@@ -2,15 +2,29 @@ namespace GitInsight.Tests;
 using LibGit2Sharp;
 using System.IO;
 using GitInsight;
+using GitInsight.Entities;
+using Microsoft.Data.Sqlite;
+using Microsoft.EntityFrameworkCore;
 
 public class GitInsightCMDTest : IDisposable
 {
+    private readonly RepositoryContext context;
+    private readonly DBRepoRepository repoRepository;
+
     Repository repo;
     string path = @".\test-repo\";
 
     public GitInsightCMDTest(){
         Repository.Init(path);
         repo = new Repository(path);
+        var connection = new SqliteConnection("Filename=:memory:");
+        connection.Open();
+        var builder = new DbContextOptionsBuilder<RepositoryContext>();
+        builder.UseSqlite(connection);
+        context = new RepositoryContext(builder.Options);
+        context.Database.EnsureCreated();
+        repoRepository = new DBRepoRepository(context);
+        //Adding first DBRepo to DB
     }
 
     [Fact]
@@ -34,15 +48,13 @@ public class GitInsightCMDTest : IDisposable
     }
 
     [Fact]
-    public void no_commits_returns_frequency_command_containing_no_frequencyDTO(){
+    public void no_commits_returns_throws_NoCommitsException(){
         //Arrange
-        var command = (FrequencyCommand)Factory.getCommand("frequency");
+        var command = Factory.getCommand("frequency");
 
-        //Act
-        command.execute(repo);
-
-        //Assert
-        Assert.Equal(0, command.frequencies.Count());
+        command.Invoking(y => y.template(repo, context))
+        .Should().Throw<NoCommitsException>()
+        .WithMessage("The repository contains no commits");
     }
 
     [Fact]
@@ -54,7 +66,7 @@ public class GitInsightCMDTest : IDisposable
 
         //Act
         repo.Commit("First commit", author1, author1, new CommitOptions(){ AllowEmptyCommit = true });
-        command.execute(repo);
+        command.template(repo, context);
 
         //Assert
         Assert.Equal(1, command.frequencies.ToArray()[0].frequency);
@@ -74,7 +86,7 @@ public class GitInsightCMDTest : IDisposable
         //Act
         repo.Commit("First commit", author1, author1, new CommitOptions(){ AllowEmptyCommit = true });
         repo.Commit("Second commit", author2, author2, new CommitOptions(){ AllowEmptyCommit = true });
-        command.execute(repo);
+        command.template(repo, context);
 
         //Assert
         Assert.Equal(2, command.frequencies.ToArray()[0].frequency);
@@ -92,7 +104,7 @@ public class GitInsightCMDTest : IDisposable
         //Act
         repo.Commit("First commit", author1, author1, new CommitOptions(){ AllowEmptyCommit = true });
         repo.Commit("Second commit", author1, author1, new CommitOptions(){ AllowEmptyCommit = true });
-        command.execute(repo);
+        command.template(repo, context);
 
         //Assert
         Assert.Equal(2, command.frequencies.ToArray()[0].frequency);
@@ -118,7 +130,7 @@ public class GitInsightCMDTest : IDisposable
         repo.Commit("Second commit", author2, author2, new CommitOptions(){ AllowEmptyCommit = true });
         repo.Commit("Third commit", author3, author3, new CommitOptions(){ AllowEmptyCommit = true });
         repo.Commit("Fourth commit", author4, author4, new CommitOptions(){ AllowEmptyCommit = true });
-        command.execute(repo);
+        command.template(repo, context);
 
         //Assert
         Assert.Equal(4, command.frequencies.ToArray()[0].frequency);
@@ -135,7 +147,7 @@ public class GitInsightCMDTest : IDisposable
 
         //Act
         repo.Commit("First commit", author1, author1, new CommitOptions(){ AllowEmptyCommit = true });
-        command.execute(repo);
+        command.template(repo, context);
 
         //Assert
         Assert.Equal("mlth", command.authors.ToArray()[0].author);
@@ -156,7 +168,7 @@ public class GitInsightCMDTest : IDisposable
         //Act
         repo.Commit("First commit", author1, author1, new CommitOptions(){ AllowEmptyCommit = true });
         repo.Commit("Second commit", author2, author2, new CommitOptions(){ AllowEmptyCommit = true });
-        command.execute(repo);
+        command.template(repo, context);
 
         //Assert
         Assert.Equal("aarv", command.authors.ToArray()[0].author);
@@ -180,7 +192,7 @@ public class GitInsightCMDTest : IDisposable
         //Act
         repo.Commit("First commit", author1, author1, new CommitOptions(){ AllowEmptyCommit = true });
         repo.Commit("Second commit", author1, author1, new CommitOptions(){ AllowEmptyCommit = true });
-        command.execute(repo);
+        command.template(repo, context);
 
         //Assert
         Assert.Equal("mlth", command.authors.ToArray()[0].author);
@@ -205,7 +217,7 @@ public class GitInsightCMDTest : IDisposable
         repo.Commit("Second commit", author1, author1, new CommitOptions(){ AllowEmptyCommit = true });
         repo.Commit("Third commit", author2, author2, new CommitOptions(){ AllowEmptyCommit = true });
         repo.Commit("Fourth commit", author2, author2, new CommitOptions(){ AllowEmptyCommit = true });
-        command.execute(repo);
+        command.template(repo, context);
 
         //Assert
         Assert.Equal("aarv", command.authors.ToArray()[0].author);
@@ -225,10 +237,9 @@ public class GitInsightCMDTest : IDisposable
         var command = (AuthorCommand)Factory.getCommand("author");
 
         //Act
-        command.execute(repo);
-
-        //Assert
-        Assert.Equal(0, command.authors.Count());
+        command.Invoking(y => y.template(repo, context))
+        .Should().Throw<NoCommitsException>()
+        .WithMessage("The repository contains no commits");
     }
 
     public void Dispose(){

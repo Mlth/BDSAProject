@@ -11,13 +11,10 @@ public class FrequencyCommand : AbstractCommand {
         return new FrequencyVisualizer(frequencies);
     }
 
-    protected override void fetchData(RepositoryContext context)
+    public override void fetchData(RepositoryContext context)
     {
         var repository = new DBRepoRepository(context);
         IEnumerable<DBCommit> commits = repository.ReadAllCommits(new DBRepositoryDTO{name = repoID});
-        if (commits is null){
-            Console.WriteLine("Commit is null");
-        }
         frequencies = (from c in commits
                     group c by c.date into group1
                     select new FrequencyDTO{date = group1.Key, frequency = group1.Count()}).ToList();
