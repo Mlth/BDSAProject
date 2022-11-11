@@ -15,16 +15,23 @@ public class AnalysisController : ControllerBase
     [HttpGet("{github_user}/{repository_name}/{command}")]
     public string Get(string github_user, string repository_name, string command)
     {
-        var repositoryPathExample = "https://github.com/" + github_user + "/" + repository_name + ".git";
-        var repositoryPath = "/Users/anton/Desktop/BDSAProject/";
+        var repositoryPath = "https://github.com/" + github_user + "/" + repository_name + ".git";
+        //var repositoryPath = "/Users/anton/Desktop/BDSAProject/";
 
         // Console.WriteLine(repositoryPathExample);
+
 
         var cloneOptions = new CloneOptions { BranchName = "master", Checkout = true };
         //var path = @"C:\Users\anton\Downloads\mypath";
         var path = Directory.GetCurrentDirectory();
-        var newDir = path + "/mypath";
-        var cloneResult = Repository.Clone(repositoryPathExample, newDir);
+        
+        var newDir = path + "/" + repository_name;
+        string existingRepo = path + "/" + repository_name;
+        if(Directory.GetDirectories(path, repository_name).Length < 1){
+            cloneRepository(repositoryPath, newDir);
+        } else {
+            pullRepository(existingRepo);
+        }
 
         WebProgram webProgram = new WebProgram();
         var jsonString = webProgram.GetAnalysisJsonString(newDir, command);
@@ -32,6 +39,16 @@ public class AnalysisController : ControllerBase
         deleteDirectory(newDir);
 
         return jsonString;
+    }
+
+    public static void cloneRepository(string repositoryPath, string newDir){
+        Repository.Clone(repositoryPath, newDir);
+    }
+
+    public static void pullRepository(string repositoryPath){
+        var repository = new Repository(repositoryPath);
+        var signature = new Signature("Lukas", "luel@itu.dk", DateTime.Now);
+        Commands.Pull(repository, signature, null);
     }
 
     public static void deleteDirectory(string path)
