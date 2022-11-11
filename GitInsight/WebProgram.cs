@@ -11,6 +11,7 @@ public class WebProgram
         command.execute(repository);
         var analysis = command.getAnalysis();
         var jsonString = analysis.analyze();
+        repository.Dispose();
         return jsonString;
     }
 }

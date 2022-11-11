@@ -27,8 +27,8 @@ public class AnalysisController : ControllerBase
         var cloneResult = Repository.Clone(repositoryPathExample, newDir);
 
         WebProgram webProgram = new WebProgram();
-        var jsonString = webProgram.GetAnalysisJsonString(repositoryPath, command);
-
+        var jsonString = webProgram.GetAnalysisJsonString(newDir, command);
+        
         deleteDirectory(newDir);
 
         return jsonString;
