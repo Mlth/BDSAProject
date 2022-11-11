@@ -7,10 +7,6 @@ public class FrequencyCommand : AbstractCommand {
 
     public ICollection<FrequencyDTO> frequencies = new List<FrequencyDTO>();
 
-    public override IVisualizer getVisualizer(){
-        return new FrequencyVisualizer(frequencies);
-    }
-
     public override void fetchData(RepositoryContext context)
     {
         var repository = new DBRepoRepository(context);
@@ -20,10 +16,13 @@ public class FrequencyCommand : AbstractCommand {
                     select new FrequencyDTO{date = group1.Key, frequency = group1.Count()}).ToList();
     }
 
-    public override void execute(Repository repo){
-        ICollection<DBCommit> commits = getDBCommits(repo);
-        frequencies = (from c in commits
-                    group c by c.date into group1
-                    select new FrequencyDTO{date = group1.Key, frequency = group1.Count()}).ToList();
+    public override IVisualizer getVisualizer()
+    {
+        return new FrequencyVisualizer(frequencies);
+    }
+
+    public override IAnalysis getAnalysis()
+    {
+         return new FrequencyAnalysis(frequencies);
     }
 }

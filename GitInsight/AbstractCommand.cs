@@ -44,5 +44,5 @@ public abstract class AbstractCommand{
 
     public abstract IVisualizer getVisualizer();
 
-    public abstract void execute(Repository repo);
+    public abstract IAnalysis getAnalysis();
 }
