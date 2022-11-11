@@ -16,16 +16,11 @@ public class AnalysisController : ControllerBase
     public string Get(string github_user, string repository_name, string command)
     {
         var repositoryPath = "https://github.com/" + github_user + "/" + repository_name + ".git";
-        //var repositoryPath = "/Users/anton/Desktop/BDSAProject/";
 
-        // Console.WriteLine(repositoryPathExample);
-
-
-        var cloneOptions = new CloneOptions { BranchName = "master", Checkout = true };
-        //var path = @"C:\Users\anton\Downloads\mypath";
         var path = Directory.GetCurrentDirectory();
         
         var newDir = path + "/" + repository_name;
+
         string existingRepo = path + "/" + repository_name;
         if(Directory.GetDirectories(path, repository_name).Length < 1){
             cloneRepository(repositoryPath, newDir);
