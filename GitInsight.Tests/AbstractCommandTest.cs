@@ -12,7 +12,7 @@ public class AbstractCommandTest : IDisposable
     private readonly DBRepoRepository repoRepository;
 
     Repository repo;
-    string path = @".\test-repo2\";
+    string path = @".\test-repo\";
 
     public AbstractCommandTest(){
         Repository.Init(path);
