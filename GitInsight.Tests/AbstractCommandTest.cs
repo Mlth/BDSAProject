@@ -1,4 +1,4 @@
-namespace GitInsight.Tests;
+/* namespace GitInsight.Tests;
 using LibGit2Sharp;
 using System.IO;
 using GitInsight;
@@ -118,4 +118,4 @@ public class AbstractCommandTest : IDisposable
         }
         Directory.Delete(directoryPath, true);
     }
-}
+} */
