@@ -32,16 +32,18 @@ using System.Linq;
 
         public (Response reponse, DBRepositoryDTO dto) Update(DBRepositoryDTO dto) {
             var entity = Read(dto);
+            
 
             if (entity is null)
             {
                 return (Response.NotFound, null);
             }
             else
-            {
+            { 
                 entity.name = dto.name;
                 entity.state = dto.state;
                 entity.commits = dto.commits;
+                _context.RepoData.Update(entity);
                 _context.SaveChanges();
                 return (Response.Updated, new DBRepositoryDTO {name = entity.name, state = entity.state, commits = entity.commits});
             }
