@@ -8,7 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Data.Sqlite;
 using System.Threading.Tasks;
 
-public class CustomWebApplicationFactory : WebApplicationFactory<WebApi.Program>
+public class CustomWebApplicationFactory : WebApplicationFactory<WebApi.Program>, IAsyncLifetime
 {
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
@@ -32,7 +32,7 @@ public class CustomWebApplicationFactory : WebApplicationFactory<WebApi.Program>
         builder.UseEnvironment("Development");
     }
 
-    /*public async Task InitializeAsync(){
+    public async Task InitializeAsync(){
         using var scope = Services.CreateAsyncScope();
         using var context = scope.ServiceProvider.GetRequiredService<RepositoryContext>();
         await context.Database.MigrateAsync();
@@ -53,6 +53,7 @@ public class CustomWebApplicationFactory : WebApplicationFactory<WebApi.Program>
         command.template(repo, context);
 
         await context.SaveChangesAsync();
+        */
     }
 
     async Task IAsyncLifetime.DisposeAsync()
@@ -61,5 +62,5 @@ public class CustomWebApplicationFactory : WebApplicationFactory<WebApi.Program>
         using var context = scope.ServiceProvider.GetRequiredService<RepositoryContext>();
 
         await context.Database.EnsureDeletedAsync();
-    }*/
+    }
 }

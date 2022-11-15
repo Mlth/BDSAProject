@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using LibGit2Sharp;
 using GitInsight;
 
-namespace WebApi.Controllers;
+namespace GitInsight.WebApi.Controllers;
 
 // Repository identifier example
 // https://localhost:7024/analysis/Mlth/BDSAProject/author
