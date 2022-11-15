@@ -31,18 +31,18 @@ using System.Linq;
         }
 
         public (Response reponse, DBRepositoryDTO dto) Update(DBRepositoryDTO dto) {
-            var entity = Read(dto);
-            
-
-            if (entity is null)
-            {
+            //var entity = Read(dto);
+            var entity = (from c in _context.RepoData
+                 where c.name == dto.name
+                 select c).FirstOrDefault();
+            if (entity is null){
                 return (Response.NotFound, null);
             }
-            else
-            { 
+            else{ 
                 entity.name = dto.name;
                 entity.state = dto.state;
                 entity.commits = dto.commits;
+                //_context.UpdateRange(dto.commits);
                 _context.RepoData.Update(entity);
                 _context.SaveChanges();
                 return (Response.Updated, new DBRepositoryDTO {name = entity.name, state = entity.state, commits = entity.commits});
