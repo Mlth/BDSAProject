@@ -18,6 +18,5 @@ public class RepositoryContextFactory : IDesignTimeDbContextFactory<RepositoryCo
         optionsBuilder.UseSqlServer(_conStr);
 
         return new RepositoryContext(optionsBuilder.Options);
-        //////////////////////
     }
 }
