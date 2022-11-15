@@ -12,7 +12,7 @@ public abstract class AbstractCommand{
         if (needsUpdate(repo, context)){
             analyseRepoAndUpdate(repo, context);
         }
-        else{
+        else {
             fetchData(context);
         }
     }
