@@ -9,7 +9,7 @@ public abstract class AbstractCommand{
             throw new NoCommitsException("The repository contains no commits");
         }
         repoID = repo.Commits.LastOrDefault().Sha;
-        analyseRepoAndUpdate(repo, context);
+        //analyseRepoAndUpdate(repo, context);
         if (needsUpdate(repo, context)){
             analyseRepoAndUpdate(repo, context);
             fetchData(context);
