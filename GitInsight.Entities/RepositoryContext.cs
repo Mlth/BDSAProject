@@ -19,6 +19,7 @@ public class RepositoryContext : DbContext
                 entity.Property(e => e.author).HasMaxLength(100).IsRequired();
                 entity.Property(e => e.date).IsRequired();
                 entity.HasOne(s => s.repo).WithMany(s => s.commits);
+                entity.HasKey(e => e.Id);
             });
 
             modelBuilder.Entity<DBRepository>(entity =>

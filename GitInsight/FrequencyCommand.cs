@@ -12,8 +12,8 @@ public class FrequencyCommand : AbstractCommand {
         var repository = new DBRepoRepository(context);
         IEnumerable<DBCommit> commits = repository.ReadAllCommits(new DBRepositoryDTO{name = repoID});
         frequencies = (from c in commits
-                    group c by c.date into group1
-                    select new FrequencyDTO{date = group1.Key, frequency = group1.Count()}).ToList();
+                    group c by c.date.Date into group1
+                    select new FrequencyDTO{date = group1.Key, frequency = group1.Count()}).OrderBy(x => x.date.Date).ToList();
     }
 
     public override IVisualizer getVisualizer()
