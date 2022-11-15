@@ -42,11 +42,22 @@ using System.Linq;
                 entity.name = dto.name;
                 entity.state = dto.state;
                 entity.commits = dto.commits;
-                //_context.UpdateRange(dto.commits);
-                //_context.RepoData.Update(entity);
                 _context.SaveChanges();
                 return (Response.Updated, new DBRepositoryDTO {name = entity.name, state = entity.state, commits = entity.commits});
             }
+        }
+
+        public DBCommit ReadLastCommit(DBRepositoryDTO dto){
+            var repo = _context.RepoData.Where(x => x.name == dto.name).Include(x => x.commits).FirstOrDefault();
+
+            if (repo is null)
+            {
+                return null;
+            }
+            else{
+                return repo.commits.MaxBy(x => x.date);
+            };
+
         }
 
         public DBRepository Read(DBRepositoryDTO dto){

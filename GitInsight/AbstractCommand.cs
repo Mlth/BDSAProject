@@ -20,7 +20,15 @@ public abstract class AbstractCommand{
 
     public ICollection<DBCommit> getDBCommits(Repository repo){
         return (from c in repo.Commits
-                        select new DBCommit{Id = c.Sha, author = c.Author.Name, date = c.Author.When.Date, repo = new DBRepository{name = repoID, state = repo.Commits.First().Sha}}).ToList();
+                        select new DBCommit{Id = c.Sha, author = c.Author.Name, date = c.Author.When.DateTime, repo = new DBRepository{name = repoID, state = repo.Commits.First().Sha}}).ToList();
+    }
+
+    public ICollection<DBCommit> getUpdatedDBCommits(Repository repo, RepositoryContext context){
+        DBRepoRepository repository = new DBRepoRepository(context);
+        var lastCommit = repository.ReadLastCommit(new DBRepositoryDTO{name = repoID});
+        return (from c in repo.Commits
+                        where c.Author.When > lastCommit.date
+                        select new DBCommit{Id = c.Sha, author = c.Author.Name, date = c.Author.When.DateTime, repo = new DBRepository{name = repoID, state = repo.Commits.First().Sha}}).ToList();
     }
 
     public void analyseRepoAndUpdate(Repository repo, RepositoryContext context)
