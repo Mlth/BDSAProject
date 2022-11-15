@@ -1,6 +1,7 @@
 namespace GitInsight.Entities;
 using GitInsight.Entities.DTOS;
 using Microsoft.EntityFrameworkCore;
+using GitInsight.Core;
 using System.Linq;
     public class DBRepoRepository
     {
