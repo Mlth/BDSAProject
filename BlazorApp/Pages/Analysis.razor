@@ -1,18 +1,31 @@
-﻿@page "/analysis"
+@page "/Analysis"
+@using System.Net.Http
+@using System.Net.Http.Json
+@using System.Threading.Tasks
+@inject HttpClient Http
 
 <PageTitle>Analysis</PageTitle>
 
 <h1>Analysis</h1>
 
-<p role="status">Current count: @currentCount</p>
+<div class="col-md-6 col-lg-4 p-3">
+            <RadzenCard Style="overflow: scroll">
+                <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.H3">@analysisText</RadzenText>
+            </RadzenCard>
+        </div>
 
-<button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
+<button class="btn btn-primary" @onclick="getAuthorAnalysis">Author</button>
 
 @code {
-    private int currentCount = 0;
 
-    private void IncrementCount()
+    private string analysisText;
+
+    protected async Task getAuthorAnalysis()
     {
-        currentCount++;
+        try {
+            analysisText = await Http.GetFromJsonAsync<string>("https://localhost:7024/analysis/Mlth/BDSAProject/author");
+        } catch(Exception e) {
+            analysisText = e.Message;
+        }
     }
 }
