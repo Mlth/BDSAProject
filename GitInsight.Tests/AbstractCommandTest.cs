@@ -62,19 +62,21 @@ public class AbstractCommandTest : IDisposable
 
     [Fact]
     public void getDBCommits_should_return_two_DBCommits(){
-        var commitDateTime1 = DateTimeOffset.Now;
+        var commitDateTime1 = DateTime.Now.Date;
         var author1 = new Signature("mlth", "mlth@itu.dk", commitDateTime1);
-        var commitDateTime2 = DateTimeOffset.Now;
+        var commitDateTime2 = DateTime.Now.Date;
         var author2 = new Signature("aarv", "aarv@itu.dk", commitDateTime2);
         var command = new FrequencyCommand();
         repo.Commit("First commit", author1, author1, new CommitOptions(){ AllowEmptyCommit = true });
+        var firstCommitId = repo.Commits.First().Sha;
         repo.Commit("Second commit", author2, author2, new CommitOptions(){ AllowEmptyCommit = true });
+        var secondCommitId = repo.Commits.First().Sha;
         var dbcommits = command.getDBCommits(repo);
         dbcommits.Should().BeEquivalentTo(new List<DBCommit>(){
-            new DBCommit{author = "mlth", date = commitDateTime1.Date, repo = new DBRepository{
+            new DBCommit{Id = firstCommitId, author = "mlth", date = commitDateTime1.Date, repo = new DBRepository{
                                                                             name = null, 
                                                                             state = repo.Commits.First().Sha}},
-            new DBCommit{author = "aarv", date = commitDateTime2.Date, repo = new DBRepository{
+            new DBCommit{Id = secondCommitId, author = "aarv", date = commitDateTime2.Date, repo = new DBRepository{
                                                                             name = null, 
                                                                             state = repo.Commits.First().Sha}}
             });

@@ -15,7 +15,7 @@ public class AuthorCommand : AbstractCommand {
                     group c by c.author into group1
                     select new AuthorDTO{author = group1.Key, frequencies = new List<FrequencyDTO>().Concat(
                         from c in group1
-                        group c by c.date into group2
+                        group c by c.date.Date into group2
                         select new FrequencyDTO {date = group2.Key, frequency = group2.Count()})};
     }
 

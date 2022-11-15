@@ -31,21 +31,37 @@ using System.Linq;
         }
 
         public (Response reponse, DBRepositoryDTO dto) Update(DBRepositoryDTO dto) {
-            var entity = Read(dto);
-
-            if (entity is null)
-            {
+            //var entity = Read(dto);
+            var entity = (from c in _context.RepoData
+                 where c.name == dto.name
+                 select c).FirstOrDefault();
+            if (entity is null){
                 return (Response.NotFound, null);
             }
-            else
-            {
+            else{ 
                 entity.name = dto.name;
                 entity.state = dto.state;
-                entity.commits = dto.commits;
-                _context.RepoData.Update(entity);
+                if (dto.commits is not null){
+                    foreach (DBCommit commit in dto.commits){
+                        entity.commits.Add(commit);
+                    }
+                }
                 _context.SaveChanges();
                 return (Response.Updated, new DBRepositoryDTO {name = entity.name, state = entity.state, commits = entity.commits});
             }
+        }
+
+        public DBCommit ReadLastCommit(DBRepositoryDTO dto){
+            var repo = _context.RepoData.Where(x => x.name == dto.name).Include(x => x.commits).FirstOrDefault();
+
+            if (repo is null)
+            {
+                return null;
+            }
+            else{
+                return repo.commits.MaxBy(x => x.date);
+            };
+
         }
 
         public DBRepository Read(DBRepositoryDTO dto){
@@ -62,10 +78,6 @@ using System.Linq;
         }
 
         public ICollection<DBCommit> ReadAllCommits(DBRepositoryDTO dto){
-            // var repo = (from c in _context.RepoData
-            //      where c.name == dto.name
-            //      select c).FirstOrDefault();
-
             var repo = _context.RepoData.Where(x => x.name == dto.name).Include(x => x.commits).FirstOrDefault();
 
             if (repo is null)
