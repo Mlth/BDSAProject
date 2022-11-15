@@ -41,7 +41,11 @@ using System.Linq;
             else{ 
                 entity.name = dto.name;
                 entity.state = dto.state;
-                entity.commits = dto.commits;
+                foreach (DBCommit commit in dto.commits){
+                    entity.commits.Add(commit);
+                }
+                //entity.commits = entity.commits.Add(dto.commits.Select(c=>c));
+                //_context.CommitData.AddRange(dto.commits);
                 _context.SaveChanges();
                 return (Response.Updated, new DBRepositoryDTO {name = entity.name, state = entity.state, commits = entity.commits});
             }
