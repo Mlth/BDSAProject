@@ -41,9 +41,12 @@ using System.Linq;
             else{ 
                 entity.name = dto.name;
                 entity.state = dto.state;
-                foreach (DBCommit commit in dto.commits){
-                    entity.commits.Add(commit);
+                if (dto.commits is not null){
+                    foreach (DBCommit commit in dto.commits){
+                        entity.commits.Add(commit);
+                    }
                 }
+                
                 //entity.commits = entity.commits.Add(dto.commits.Select(c=>c));
                 //_context.CommitData.AddRange(dto.commits);
                 _context.SaveChanges();
