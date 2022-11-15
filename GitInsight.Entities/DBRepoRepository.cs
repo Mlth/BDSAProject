@@ -43,7 +43,7 @@ using System.Linq;
                 entity.state = dto.state;
                 entity.commits = dto.commits;
                 //_context.UpdateRange(dto.commits);
-                _context.RepoData.Update(entity);
+                //_context.RepoData.Update(entity);
                 _context.SaveChanges();
                 return (Response.Updated, new DBRepositoryDTO {name = entity.name, state = entity.state, commits = entity.commits});
             }

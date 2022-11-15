@@ -11,6 +11,7 @@ public abstract class AbstractCommand{
         repoID = repo.Commits.LastOrDefault().Sha;
         if (needsUpdate(repo, context)){
             analyseRepoAndUpdate(repo, context);
+            fetchData(context);
         }
         else{
             fetchData(context);
