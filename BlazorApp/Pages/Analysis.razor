@@ -14,16 +14,29 @@
             </RadzenCard>
         </div>
 
-<button class="btn btn-primary" @onclick="getAuthorAnalysis">Author</button>
+<button class="btn btn-primary" @onclick="getAuthorAnalysis">Author Analysis</button>
+<button class="btn btn-primary" @onclick="getFrequencyAnalysis">Frequency Analysis</button>
+
 
 @code {
 
     private string analysisText;
 
+
+
     protected async Task getAuthorAnalysis()
     {
         try {
-            analysisText = await Http.GetFromJsonAsync<string>("https://localhost:7024/analysis/Mlth/BDSAProject/author");
+            analysisText = await Http.GetStringAsync("https://localhost:7024/analysis/Mlth/BDSAProject/author");
+        } catch(Exception e) {
+            analysisText = e.Message;
+        }
+    }
+
+    protected async Task getFrequencyAnalysis() 
+    {
+        try {
+            analysisText = await Http.GetStringAsync("https://localhost:7024/analysis/Mlth/BDSAProject/frequency");
         } catch(Exception e) {
             analysisText = e.Message;
         }
