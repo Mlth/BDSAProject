@@ -21,11 +21,12 @@ public class CustomWebApplicationFactory : WebApplicationFactory<WebApi.Program>
                 services.Remove(descriptor);
             }
 
-             var connectionString = $"Server=localhost,1433;Database=GitInsightDB;User Id=SA;Password=<YourStrong@Passw0rd>;Trusted_Connection=False;Encrypt=False";
+            var connection = new SqliteConnection("Filename=:memory:");
+            connection.Open();
 
             services.AddDbContext<RepositoryContext>(options =>
             {
-                options.UseSqlServer(connectionString);
+                options.UseSqlite(connection);
             });
         });
 
@@ -35,25 +36,26 @@ public class CustomWebApplicationFactory : WebApplicationFactory<WebApi.Program>
     public async Task InitializeAsync(){
         using var scope = Services.CreateAsyncScope();
         using var context = scope.ServiceProvider.GetRequiredService<RepositoryContext>();
-        await context.Database.MigrateAsync();
+        if(context.Database.IsRelational()){
+            await context.Database.EnsureCreatedAsync();
+        }
 
-        /*
-        var path = @".\test-repo3\";
-        Repository.Init(path);
-        var repo = new Repository(path);
+        /*var testRepoToBeCloned = "https://github.com/Mlth/test-repo3";
+        var pathToPutClonedRepo = @".\test-repo3\";
+        var pathToClonedRepo = Repository.Clone(testRepoToBeCloned, pathToPutClonedRepo);
+        var repo = new Repository(pathToClonedRepo);
 
         var commitDateTime1 = DateTimeOffset.Now;
         var author1 = new Signature("mlth", "mlth@itu.dk", commitDateTime1);
-        var commitDateTime2 = DateTimeOffset.Now;
-        var author2 = new Signature("aarv", "aarv@itu.dk", commitDateTime2);
         var command = new FrequencyCommand();
 
         repo.Commit("First commit", author1, author1, new CommitOptions(){ AllowEmptyCommit = true });
 
-        command.template(repo, context);
+        Remote remote = repo.Network.Remotes["origin"];
+        var pushRefSpec = @"refs/heads/master";              
+        repo.Network.Push(remote, pushRefSpec);
 
-        await context.SaveChangesAsync();
-        */
+        await context.SaveChangesAsync();*/
     }
 
     async Task IAsyncLifetime.DisposeAsync()
@@ -62,5 +64,21 @@ public class CustomWebApplicationFactory : WebApplicationFactory<WebApi.Program>
         using var context = scope.ServiceProvider.GetRequiredService<RepositoryContext>();
 
         await context.Database.EnsureDeletedAsync();
+        //DeleteReadOnlyDirectory(@".\test-repo3\");
+    }
+
+    public void DeleteReadOnlyDirectory(string directoryPath)
+    {
+        foreach (var subdirectory in Directory.EnumerateDirectories(directoryPath)) 
+        {
+            DeleteReadOnlyDirectory(subdirectory);
+        }
+        foreach (var fileName in Directory.EnumerateFiles(directoryPath))
+        {
+            var fileInfo = new FileInfo(fileName);
+            fileInfo.Attributes = FileAttributes.Normal;
+            fileInfo.Delete();
+        }
+        Directory.Delete(directoryPath, true);
     }
 }

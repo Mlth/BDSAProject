@@ -34,6 +34,6 @@ public class RepositoryEndpointTests : IClassFixture<CustomWebApplicationFactory
             frequencyArray[i] = frequencyArray[i].Trim();
         }
 
-        Assert.Equal("16 15-11-2022 00:00:00", frequencyArray[0]);
+        Assert.Equal<Object>("16 15-11-2022 00:00:00", frequencyArray[0]);
     }
 }

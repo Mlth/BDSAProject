@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using LibGit2Sharp;
 using GitInsight;
+using GitInsight.Entities;
 
 namespace GitInsight.WebApi.Controllers;
 
@@ -12,6 +13,12 @@ namespace GitInsight.WebApi.Controllers;
 [Route("[controller]")]
 public class AnalysisController : ControllerBase
 {
+    private readonly RepositoryContext context;
+
+    public AnalysisController(RepositoryContext context){
+        this.context = context;
+    }
+
     [HttpGet("{github_user}/{repository_name}/{command}")]
     public string Get(string github_user, string repository_name, string command)
     {
@@ -28,8 +35,14 @@ public class AnalysisController : ControllerBase
             pullRepository(existingRepo);
         }
 
-        WebProgram webProgram = new WebProgram();
-        var jsonString = webProgram.GetAnalysisJsonString(newDir, command);
+        var repository = new Repository(existingRepo);
+        var actualCommand = Factory.getCommand(command);
+        actualCommand.template(repository, context);
+        var analysis = actualCommand.getAnalysis();
+        var jsonString = analysis.analyze();
+        repository.Dispose();
+
+        var actualJsonString = jsonString;
         
         deleteDirectory(newDir);
 
