@@ -8,37 +8,44 @@
 
 <h1>Analysis</h1>
 
-<div class="col-md-6 col-lg-4 p-3">
-            <RadzenCard Style="overflow: scroll">
-                <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.H3">@analysisText</RadzenText>
-            </RadzenCard>
-        </div>
+@foreach (var author in authors) {
+            <p>Author: @author.author</p>
+            @foreach (var freq in @author.frequencies) {
+                <p>@freq.frequency  @freq.date</p>
+            }
+        }
+@foreach (var freq in @frequencies) {
+                <p>@freq.frequency  @freq.date</p>
+            }
+        
 
 <button class="btn btn-primary" @onclick="getAuthorAnalysis">Author Analysis</button>
 <button class="btn btn-primary" @onclick="getFrequencyAnalysis">Frequency Analysis</button>
 
 
 @code {
-
-    private string analysisText;
-
-
+    private AuthorDTO[] authors = new AuthorDTO[] {};
+    private FrequencyDTO[] frequencies = new FrequencyDTO[] {};
 
     protected async Task getAuthorAnalysis()
     {
-        try {
-            analysisText = await Http.GetStringAsync("https://localhost:7024/analysis/Mlth/BDSAProject/author");
-        } catch(Exception e) {
-            analysisText = e.Message;
-        }
+        frequencies = new FrequencyDTO[] {};
+        authors = await Http.GetFromJsonAsync<AuthorDTO[]>("https://localhost:7024/analysis/Mlth/BDSAProject/author");
     }
 
     protected async Task getFrequencyAnalysis() 
     {
-        try {
-            analysisText = await Http.GetStringAsync("https://localhost:7024/analysis/Mlth/BDSAProject/frequency");
-        } catch(Exception e) {
-            analysisText = e.Message;
-        }
+        authors = new AuthorDTO[] {};
+        frequencies = await Http.GetFromJsonAsync<FrequencyDTO[]>("https://localhost:7024/analysis/Mlth/BDSAProject/frequency");
+    }
+
+    public class AuthorDTO {
+        public string author {get; set;}
+        public IEnumerable<FrequencyDTO> frequencies {get; set;} = new List<FrequencyDTO>();
+    }
+
+    public record FrequencyDTO{
+        public int frequency {get; set;}
+        public DateTime date {get; set;}
     }
 }
