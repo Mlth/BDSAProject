@@ -12,7 +12,9 @@ public class RepositoryContextFactory : IDesignTimeDbContextFactory<RepositoryCo
             Server=localhost,1433;
             Database=GitInsightDB;
             User Id=SA;
-            Password=<YourStrong@Passw0rd>;";
+            Password=<YourStrong@Passw0rd>;
+            Trusted_Connection=False;
+            Encrypt=False";
 
         var optionsBuilder = new DbContextOptionsBuilder<RepositoryContext>();
         optionsBuilder.UseSqlServer(_conStr);
