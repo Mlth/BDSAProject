@@ -13,6 +13,11 @@
 
 @if (isItAuthor == true)
 {
+    <RadzenChart>
+        <RadzenAreaSeries Smooth=true Data="@authorCharts" CategoryProperty="Author" ValueProperty="Frequency"
+        RenderingOrder="1">
+        </RadzenAreaSeries>
+    </RadzenChart>
     @foreach (var author in authorAnalysis)
     {
         <p>@author.author</p>
@@ -42,6 +47,8 @@
     private AuthorDTO[] authorAnalysis = new AuthorDTO[] { };
     private FrequencyDTO[] frequencyAnalysis = new FrequencyDTO[] { };
 
+    private List<AuthorChart> authorCharts = new List<AuthorChart>();
+
     bool isItAuthor;
     bool isItFrequency;
 
@@ -57,6 +64,7 @@
             authorAnalysis = await Http.GetFromJsonAsync<AuthorDTO[]>("https://localhost:7024/analysis/Mlth/BDSAProject/author");
             active = false;
         }
+        authorCharts = getAuthorDataToChart();
     }
 
     protected async Task getFrequencyAnalysis()
@@ -72,6 +80,24 @@
         }
     }
 
+    private List<AuthorChart> getAuthorDataToChart()
+    {
+        List<AuthorChart> authorCharts = new List<AuthorChart>();
+        foreach (var author in authorAnalysis) 
+        {
+            var authorObject = new AuthorChart();
+            var freqCounter = 0;
+            authorObject.Author = author.author;
+            foreach (var freq in author.frequencies) 
+            {
+                freqCounter++;   
+            }
+            authorObject.Frequency = freqCounter;
+            authorCharts.Add(authorObject);
+        }
+        return authorCharts;
+    }
+
     public class AuthorDTO
     {
         public string author { get; set; }
@@ -82,5 +108,11 @@
     {
         public int frequency { get; set; }
         public DateTime date { get; set; }
+    }
+
+    public class AuthorChart
+    {
+        public string Author { get; set; }
+        public int Frequency { get; set; }
     }
 }
