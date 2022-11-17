@@ -45,12 +45,18 @@
     bool isItAuthor;
     bool isItFrequency;
 
+    bool active = false;
+
     protected async Task getAuthorAnalysis()
     {
         isItAuthor = true;
         isItFrequency = false;
 
-        authorAnalysis = await Http.GetFromJsonAsync<AuthorDTO[]>("https://localhost:7024/analysis/Mlth/BDSAProject/author");
+        if(!active && authorAnalysis.Length == 0) {
+            active = true;
+            authorAnalysis = await Http.GetFromJsonAsync<AuthorDTO[]>("https://localhost:7024/analysis/Mlth/BDSAProject/author");
+            active = false;
+        }
     }
 
     protected async Task getFrequencyAnalysis()
@@ -58,8 +64,12 @@
         isItFrequency = true;
         isItAuthor = false;
 
-        frequencyAnalysis = await
-        Http.GetFromJsonAsync<FrequencyDTO[]>("https://localhost:7024/analysis/Mlth/BDSAProject/frequency");
+        if(!active && frequencyAnalysis.Length == 0) {
+            active = true;
+            frequencyAnalysis = await
+            Http.GetFromJsonAsync<FrequencyDTO[]>("https://localhost:7024/analysis/Mlth/BDSAProject/frequency");
+            active = false;
+        }
     }
 
     public class AuthorDTO
