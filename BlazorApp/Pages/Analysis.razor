@@ -18,6 +18,10 @@
         <RadzenAreaSeries Smooth=true Data="@authorObjects" CategoryProperty="author" ValueProperty="frequency"
         RenderingOrder="1">
         </RadzenAreaSeries>
+        <RadzenValueAxis>
+            <RadzenGridLines Visible="true" />
+            <RadzenAxisTitle Text="Commit Frequency" />
+        </RadzenValueAxis>
     </RadzenChart>
     @foreach (var author in authorAnalysis)
     {
@@ -36,6 +40,10 @@
         <RadzenAreaSeries Smooth=true Data="@frequencyAnalysis" CategoryProperty="date" ValueProperty="frequency"
         RenderingOrder="1">
         </RadzenAreaSeries>
+        <RadzenValueAxis>
+            <RadzenGridLines Visible="true" />
+            <RadzenAxisTitle Text="Commit Frequency" />
+        </RadzenValueAxis>
     </RadzenChart>
 
     @foreach (var freq in @frequencyAnalysis)
