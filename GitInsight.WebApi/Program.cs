@@ -3,8 +3,14 @@ using GitInsight.Entities;
 using Microsoft.EntityFrameworkCore;
 
 public class Program{
+    public static string githubApiKey;
+
     public static void Main(String[] args){
         var builder = WebApplication.CreateBuilder(args);
+
+        //dotnet user-secrets init
+        //dotnet user-secrets set "Tokens:gitinsight" "YOUR_TOKEN"
+        githubApiKey = builder.Configuration["Tokens:gitinsight"];
 
         builder.Services.AddControllers();
         builder.Services.AddDbContext<RepositoryContext>(opt => opt.UseSqlServer(@"
@@ -31,6 +37,8 @@ public class Program{
         app.UseAuthorization();
 
         app.MapControllers();
+        
+        app.MapGet("/", () => githubApiKey);
 
         app.Run();
     }

@@ -4,12 +4,12 @@ namespace GitInsight;
 
 public class WebProgram
 {
-    string githubApiKey;
+    /*string githubApiKey;
 
     public WebProgram(string githubApiKey){
         this.githubApiKey = githubApiKey;
     }
-    public async Task<string> GetAnalysisJsonStringAsync(string repositoryLink, string repository_name, string inputCommand)
+    public async Task<string> GetAnalysisJsonStringAsync(string repositoryLink, string repository_name, string inputCommand, RepositoryContext context, IGitFetcher fetcher)
     {
         var productInformation = new ProductHeaderValue("luel");
         var credentials = new Octokit.Credentials(githubApiKey);
@@ -19,7 +19,7 @@ public class WebProgram
             "Mlth", "BDSAProject");
         /*foreach (Octokit.Repository fork in allForks){
             Console.WriteLine(fork.CloneUrl);
-        }*/
+        }
         
         var repositories = Directory.GetParent(Directory.GetCurrentDirectory()) + "/Repositories/";
         foreach(string s in Directory.GetDirectories(Directory.GetCurrentDirectory(), repository_name)){
@@ -32,8 +32,6 @@ public class WebProgram
             pullRepository(repositoryLocation);
         }
 
-        RepositoryContextFactory factory = new RepositoryContextFactory();
-        RepositoryContext context = factory.CreateDbContext(new string[] {});
         var repository = new LibGit2Sharp.Repository(repositoryLocation);
         var command = Factory.getCommand(inputCommand);
         command.template(repository, context);
@@ -69,4 +67,5 @@ public class WebProgram
         var dir = new DirectoryInfo(path);
         dir.Delete(true);
     }
+    */
 }
