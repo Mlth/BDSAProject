@@ -7,10 +7,12 @@ public class FrequencyCommand : AbstractCommand {
 
     public ICollection<FrequencyDTO> frequencies = new List<FrequencyDTO>();
 
-    public override void fetchData(RepositoryContext context)
+    public FrequencyCommand(Repository repo, RepositoryContext context) : base(repo, context){
+        
+    }
+    public override void fetchData()
     {
-        var repository = new DBRepoRepository(context);
-        IEnumerable<DBCommit> commits = repository.ReadAllCommits(new DBRepositoryDTO{name = repoID});
+        IEnumerable<DBReadCommitDTO> commits = DBRepository.ReadAllCommits(repoID)!;
         frequencies = (from c in commits
                     group c by c.date.Date into group1
                     select new FrequencyDTO{date = group1.Key, frequency = group1.Count()}).OrderBy(x => x.date.Date).ToList();

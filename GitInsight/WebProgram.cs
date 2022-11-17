@@ -14,12 +14,12 @@ public class WebProgram
 
         RepositoryContextFactory factory = new RepositoryContextFactory();
         RepositoryContext context = factory.CreateDbContext(new string[] {});
-        var repository = new Repository(repositoryPath);
-        var command = Factory.getCommand(inputCommand);
-        command.template(repository, context);
+        var repo = new Repository(repositoryPath);
+        var command = Factory.getCommandAndIncjectDependencies(inputCommand, repo, context);
+        command.processRepo();
         var analysis = command.getAnalysis();
         var jsonString = analysis.analyze();
-        repository.Dispose();
+        repo.Dispose();
         deleteDirectory(repositoryPath);
         return jsonString;
     }

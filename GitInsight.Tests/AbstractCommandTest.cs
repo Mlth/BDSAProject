@@ -33,15 +33,13 @@ public class AbstractCommandTest : IDisposable
         var author1 = new Signature("mlth", "mlth@itu.dk", commitDateTime1);
         var commitDateTime2 = DateTimeOffset.Now;
         var author2 = new Signature("aarv", "aarv@itu.dk", commitDateTime2);
-        var firstCommand = new FrequencyCommand();
-
         //Act
         repo.Commit("First commit", author1, author1, new CommitOptions(){ AllowEmptyCommit = true });
-        firstCommand.template(repo, context);
+        var firstCommand = new FrequencyCommand(repo, context);
+        firstCommand.processRepo();
         repo.Commit("Second commit", author2, author2, new CommitOptions(){ AllowEmptyCommit = true });
-        var secondCommand = new FrequencyCommand();
-        secondCommand.repoID = firstCommand.repoID;
-        secondCommand.needsUpdate(repo, context).Should().BeTrue();
+        var secondCommand = new FrequencyCommand(repo, context);
+        secondCommand.needsUpdate().Should().BeTrue();
     }
 
     [Fact]
@@ -50,14 +48,13 @@ public class AbstractCommandTest : IDisposable
         var author1 = new Signature("mlth", "mlth@itu.dk", commitDateTime1);
         var commitDateTime2 = DateTimeOffset.Now;
         var author2 = new Signature("aarv", "aarv@itu.dk", commitDateTime2);
-        var firstCommand = new FrequencyCommand();
 
         //Act
         repo.Commit("First commit", author1, author1, new CommitOptions(){ AllowEmptyCommit = true });
-        firstCommand.template(repo, context);
-        var secondCommand = new FrequencyCommand();
-        secondCommand.repoID = firstCommand.repoID;
-        secondCommand.needsUpdate(repo, context).Should().BeFalse();
+        var firstCommand = new FrequencyCommand(repo, context);
+        firstCommand.processRepo();
+        var secondCommand = new FrequencyCommand(repo, context);
+        secondCommand.needsUpdate().Should().BeFalse();
     }
 
     [Fact]
@@ -66,44 +63,36 @@ public class AbstractCommandTest : IDisposable
         var author1 = new Signature("mlth", "mlth@itu.dk", commitDateTime1);
         var commitDateTime2 = DateTime.Now.Date;
         var author2 = new Signature("aarv", "aarv@itu.dk", commitDateTime2);
-        var command = new FrequencyCommand();
         repo.Commit("First commit", author1, author1, new CommitOptions(){ AllowEmptyCommit = true });
         var firstCommitId = repo.Commits.First().Sha;
         repo.Commit("Second commit", author2, author2, new CommitOptions(){ AllowEmptyCommit = true });
         var secondCommitId = repo.Commits.First().Sha;
-        var dbcommits = command.getDBCommits(repo);
+        var command = new FrequencyCommand(repo, context);
+        var dbcommits = command.getDBCommits();
         dbcommits.Should().BeEquivalentTo(new List<DBCommit>(){
             new DBCommit{Id = firstCommitId, author = "mlth", date = commitDateTime1.Date, repo = new DBRepository{
-                                                                            name = null, 
+                                                                            Id = firstCommitId, 
                                                                             state = repo.Commits.First().Sha}},
             new DBCommit{Id = secondCommitId, author = "aarv", date = commitDateTime2.Date, repo = new DBRepository{
-                                                                            name = null, 
+                                                                            Id = firstCommitId, 
                                                                             state = repo.Commits.First().Sha}}
             });
     }
 
     [Fact]
-    public void needsUpdate_should_return_false_if_no_repo_exists(){
+    public void needsUpdate_should_return_false_if_no_repo_exists_in_the_database(){
         var commitDateTime1 = DateTimeOffset.Now;
         var author1 = new Signature("mlth", "mlth@itu.dk", commitDateTime1);
-        var firstCommand = new FrequencyCommand();
 
         //Act
         repo.Commit("First commit", author1, author1, new CommitOptions(){ AllowEmptyCommit = true });
-        firstCommand.repoID = repo.Commits.Last().Sha;
-        firstCommand.needsUpdate(repo, context).Should().BeFalse();
+        var firstCommand = new FrequencyCommand(repo, context);
+        firstCommand.needsUpdate().Should().BeFalse();
     }
-    
+
     public void Dispose(){
         repo.Dispose();
         DeleteReadOnlyDirectory(path);
-    }
-
-    [Fact]
-    public void getDBCommits_should_return_zero_DBCommits(){
-        var command = new FrequencyCommand();
-        var dbcommits = command.getDBCommits(repo);
-        dbcommits.Should().BeEmpty();
     }
 
     public void DeleteReadOnlyDirectory(string directoryPath)

@@ -33,28 +33,21 @@ public class GitInsightCMDTest : IDisposable
         string frequencyString = "frequency";
         string authorString = "author";
         string exceptionString = "test";
+        var commitDateTime1 = DateTimeOffset.Now;
+        var author1 = new Signature("mlth", "mlth@itu.dk", commitDateTime1);
 
         //Act
-        var frequencyCommand = Factory.getCommand(frequencyString);
-        var authorCommand = Factory.getCommand(authorString);
+        repo.Commit("First commit", author1, author1, new CommitOptions(){ AllowEmptyCommit = true });
+        var frequencyCommand = Factory.getCommandAndIncjectDependencies(frequencyString, repo, context);
+        var authorCommand = Factory.getCommandAndIncjectDependencies(authorString, repo, context);
 
         //Assert
         Assert.IsType<FrequencyCommand>(frequencyCommand);
         Assert.IsType<AuthorCommand>(authorCommand);
         try{
-            Factory.getCommand(exceptionString);
+            Factory.getCommandAndIncjectDependencies(exceptionString, repo, context);
             Assert.Fail("Exception was not thrown when using invalid string for Factory.GetCommand");
         } catch (NotImplementedException) { }
-    }
-
-    [Fact]
-    public void no_commits_returns_throws_NoCommitsException(){
-        //Arrange
-        var command = Factory.getCommand("frequency");
-
-        command.Invoking(y => y.template(repo, context))
-        .Should().Throw<NoCommitsException>()
-        .WithMessage("The repository contains no commits");
     }
 
     [Fact]
@@ -62,11 +55,11 @@ public class GitInsightCMDTest : IDisposable
         //Arrange
         var commitDateTime1 = DateTimeOffset.Now;
         var author1 = new Signature("mlth", "mlth@itu.dk", commitDateTime1);
-        var command = (FrequencyCommand)Factory.getCommand("frequency");
 
         //Act
         repo.Commit("First commit", author1, author1, new CommitOptions(){ AllowEmptyCommit = true });
-        command.template(repo, context);
+        var command = (FrequencyCommand)Factory.getCommandAndIncjectDependencies("frequency", repo, context);
+        command.processRepo();
 
         //Assert
         Assert.Equal(1, command.frequencies.ToArray()[0].frequency);
@@ -81,12 +74,12 @@ public class GitInsightCMDTest : IDisposable
         var author1 = new Signature("mlth", "mlth@itu.dk", commitDateTime1);
         var commitDateTime2 = DateTimeOffset.Now;
         var author2 = new Signature("aarv", "aarv@itu.dk", commitDateTime2);
-        var command = (FrequencyCommand)Factory.getCommand("frequency");
 
         //Act
         repo.Commit("First commit", author1, author1, new CommitOptions(){ AllowEmptyCommit = true });
         repo.Commit("Second commit", author2, author2, new CommitOptions(){ AllowEmptyCommit = true });
-        command.template(repo, context);
+        var command = (FrequencyCommand)Factory.getCommandAndIncjectDependencies("frequency", repo, context);
+        command.processRepo();
 
         //Assert
         Assert.Equal(2, command.frequencies.ToArray()[0].frequency);
@@ -99,12 +92,12 @@ public class GitInsightCMDTest : IDisposable
         //Arrange
         var commitDateTime1 = DateTimeOffset.Now;
         var author1 = new Signature("mlth", "mlth@itu.dk", commitDateTime1);
-        var command = (FrequencyCommand)Factory.getCommand("frequency");
 
         //Act
         repo.Commit("First commit", author1, author1, new CommitOptions(){ AllowEmptyCommit = true });
         repo.Commit("Second commit", author1, author1, new CommitOptions(){ AllowEmptyCommit = true });
-        command.template(repo, context);
+        var command = (FrequencyCommand)Factory.getCommandAndIncjectDependencies("frequency", repo, context);
+        command.processRepo();
 
         //Assert
         Assert.Equal(2, command.frequencies.ToArray()[0].frequency);
@@ -123,14 +116,14 @@ public class GitInsightCMDTest : IDisposable
         var author3 = new Signature("mlth", "mlth@itu.dk", commitDateTime3);
         var commitDateTime4 = DateTimeOffset.Now;
         var author4 = new Signature("aarv", "aarv@itu.dk", commitDateTime4);
-        var command = (FrequencyCommand)Factory.getCommand("frequency");
 
         //Act
         repo.Commit("First commit", author1, author1, new CommitOptions(){ AllowEmptyCommit = true });
         repo.Commit("Second commit", author2, author2, new CommitOptions(){ AllowEmptyCommit = true });
         repo.Commit("Third commit", author3, author3, new CommitOptions(){ AllowEmptyCommit = true });
         repo.Commit("Fourth commit", author4, author4, new CommitOptions(){ AllowEmptyCommit = true });
-        command.template(repo, context);
+        var command = (FrequencyCommand)Factory.getCommandAndIncjectDependencies("frequency", repo, context);
+        command.processRepo();
 
         //Assert
         Assert.Equal(4, command.frequencies.ToArray()[0].frequency);
@@ -143,11 +136,11 @@ public class GitInsightCMDTest : IDisposable
         //Arrange
         var commitDateTime1 = DateTimeOffset.Now;
         var author1 = new Signature("mlth", "mlth@itu.dk", commitDateTime1);
-        var command = (AuthorCommand)Factory.getCommand("author");
 
         //Act
         repo.Commit("First commit", author1, author1, new CommitOptions(){ AllowEmptyCommit = true });
-        command.template(repo, context);
+        var command = (AuthorCommand)Factory.getCommandAndIncjectDependencies("author", repo, context);
+        command.processRepo();
 
         //Assert
         Assert.Equal("mlth", command.authors.ToArray()[0].author);
@@ -163,12 +156,12 @@ public class GitInsightCMDTest : IDisposable
         var author1 = new Signature("mlth", "mlth@itu.dk", commitDateTime1);
         var commitDateTime2 = DateTimeOffset.Now;
         var author2 = new Signature("aarv", "aarv@itu.dk", commitDateTime2);
-        var command = (AuthorCommand)Factory.getCommand("author");
 
         //Act
         repo.Commit("First commit", author1, author1, new CommitOptions(){ AllowEmptyCommit = true });
         repo.Commit("Second commit", author2, author2, new CommitOptions(){ AllowEmptyCommit = true });
-        command.template(repo, context);
+        var command = (AuthorCommand)Factory.getCommandAndIncjectDependencies("author", repo, context);
+        command.processRepo();
 
         //Assert
         Assert.Equal("aarv", command.authors.ToArray()[0].author);
@@ -187,12 +180,12 @@ public class GitInsightCMDTest : IDisposable
         //Arrange
         var commitDateTime1 = DateTimeOffset.Now;
         var author1 = new Signature("mlth", "mlth@itu.dk", commitDateTime1);
-        var command = (AuthorCommand)Factory.getCommand("author");
 
         //Act
         repo.Commit("First commit", author1, author1, new CommitOptions(){ AllowEmptyCommit = true });
         repo.Commit("Second commit", author1, author1, new CommitOptions(){ AllowEmptyCommit = true });
-        command.template(repo, context);
+        var command = (AuthorCommand)Factory.getCommandAndIncjectDependencies("author", repo, context);
+        command.processRepo();
 
         //Assert
         Assert.Equal("mlth", command.authors.ToArray()[0].author);
@@ -210,14 +203,14 @@ public class GitInsightCMDTest : IDisposable
         var author1 = new Signature("mlth", "mlth@itu.dk", commitDateTime1);
         var commitDateTime2 = DateTimeOffset.Now;
         var author2 = new Signature("aarv", "aarv@itu.dk", commitDateTime2);
-        var command = (AuthorCommand)Factory.getCommand("author");
 
         //Act
         repo.Commit("First commit", author1, author1, new CommitOptions(){ AllowEmptyCommit = true });
         repo.Commit("Second commit", author1, author1, new CommitOptions(){ AllowEmptyCommit = true });
         repo.Commit("Third commit", author2, author2, new CommitOptions(){ AllowEmptyCommit = true });
         repo.Commit("Fourth commit", author2, author2, new CommitOptions(){ AllowEmptyCommit = true });
-        command.template(repo, context);
+        var command = (AuthorCommand)Factory.getCommandAndIncjectDependencies("author", repo, context);
+        command.processRepo();
 
         //Assert
         Assert.Equal("aarv", command.authors.ToArray()[0].author);
@@ -228,19 +221,7 @@ public class GitInsightCMDTest : IDisposable
         Assert.Equal(commitDateTime2.Date.ToShortDateString(), command.authors.ToArray()[1].frequencies.ToArray()[0].date.ToShortDateString());
         Assert.Equal(2, command.authors.Count());
     }
-    
 
-    //Test AuthorDTO with no commits
-    [Fact]
-    public void No_commits_by_zero_authors_returns_author_command_containing_zero_authors_with_zero_frequencyDTO(){
-        //Arrange
-        var command = (AuthorCommand)Factory.getCommand("author");
-
-        //Act
-        command.Invoking(y => y.template(repo, context))
-        .Should().Throw<NoCommitsException>()
-        .WithMessage("The repository contains no commits");
-    }
 
     public void Dispose(){
         repo.Dispose();

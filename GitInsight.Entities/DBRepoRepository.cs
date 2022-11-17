@@ -13,79 +13,55 @@ using System.Linq;
         }
 
         public Response Create(DBRepositoryDTO dto){
-            var entity = (from c in _context.RepoData
-                        where c.name == dto.name
-                        select c).FirstOrDefault();
-
+            var entity = _context.RepoData.Find(dto.Id);
             if (entity is null)
             {
-                entity = new DBRepository{name = dto.name, state = dto.state, commits = dto.commits};
-
+                entity = new DBRepository{Id = dto.Id, state = dto.state, commits = dto.commits};
                 _context.RepoData.Add(entity);
                 _context.SaveChanges();
-
                 return Response.Created;
             }
                 return Response.Conflict;
-            
         }
 
-        public (Response reponse, DBRepositoryDTO dto) Update(DBRepositoryDTO dto) {
-            //var entity = Read(dto);
-            var entity = (from c in _context.RepoData
-                 where c.name == dto.name
-                 select c).FirstOrDefault();
+        public Response Update(DBUpdateRepositoryDTO dto) {
+            var entity = _context.RepoData.Find(dto.Id);
             if (entity is null){
-                return (Response.NotFound, null);
+                return Response.NotFound;
             }
             else{ 
-                entity.name = dto.name;
+                var lastCommit = ReadLastCommit(new DBRepositoryDTO{Id = dto.Id});
+                entity.Id = dto.Id;
                 entity.state = dto.state;
                 if (dto.commits is not null){
                     foreach (DBCommit commit in dto.commits){
-                        entity.commits.Add(commit);
+                        if (commit.date > lastCommit.date){
+                            entity.commits.Add(commit);
+                        }
                     }
                 }
                 _context.SaveChanges();
-                return (Response.Updated, new DBRepositoryDTO {name = entity.name, state = entity.state, commits = entity.commits});
+                return Response.Updated;
             }
         }
 
-        public DBCommit ReadLastCommit(DBRepositoryDTO dto){
-            var repo = _context.RepoData.Where(x => x.name == dto.name).Include(x => x.commits).FirstOrDefault();
-
-            if (repo is null)
-            {
-                return null;
-            }
-            else{
-                return repo.commits.MaxBy(x => x.date);
-            };
-
+        public DBLastCommitDTO? ReadLastCommit(DBRepositoryDTO dto){
+            var repo = _context.RepoData.Find(dto.Id);
+            return repo is null ? null : new DBLastCommitDTO(repo.commits.MaxBy(x => x.date)!.date);
         }
 
-        public DBRepository Read(DBRepositoryDTO dto){
-            var repo = (from c in _context.RepoData
-                 where c.name == dto.name
-                 select c).FirstOrDefault();
-            if (repo is null)
-            {
-                return null;
-            }
-            else{
-                return repo;
-            };
+        public DBReadRepositoryDTO? Read(string repoID){
+            var repo = _context.RepoData.Find(repoID);
+            return repo is null ? null : new DBReadRepositoryDTO{state = repo.state, commits = repo.commits};
         }
 
-        public ICollection<DBCommit> ReadAllCommits(DBRepositoryDTO dto){
-            var repo = _context.RepoData.Where(x => x.name == dto.name).Include(x => x.commits).FirstOrDefault();
-
-            if (repo is null)
-            {
-                return null;
+        public IEnumerable<DBReadCommitDTO>? ReadAllCommits(string repoID) {
+            var repo = _context.RepoData.Find(repoID);
+            if (repo is not null){
+                var commits = from c in repo.commits
+                            select new DBReadCommitDTO {author = c.author, date = c.date};
+                return commits;
             }
-            else{
-                return repo.commits;
-            };
+            return null;
         }
     }
