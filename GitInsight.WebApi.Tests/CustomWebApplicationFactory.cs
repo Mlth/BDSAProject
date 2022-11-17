@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Data.Sqlite;
 using System.Threading.Tasks;
+using GitInsight.WebApi.Controllers;
 
 public class CustomWebApplicationFactory : WebApplicationFactory<WebApi.Program>, IAsyncLifetime
 {
@@ -14,6 +15,7 @@ public class CustomWebApplicationFactory : WebApplicationFactory<WebApi.Program>
     {
         builder.ConfigureTestServices(services =>
         {
+            //Finding and removing database from service
             var descriptor = services.SingleOrDefault(d => d.ServiceType == typeof(DbContextOptions<RepositoryContext>));
 
             if (descriptor is not null)
@@ -28,6 +30,17 @@ public class CustomWebApplicationFactory : WebApplicationFactory<WebApi.Program>
             {
                 options.UseSqlite(connection);
             });
+            
+            //Finding and removing IGitFetcher from service
+            descriptor = services.SingleOrDefault(f => f.ServiceType == typeof(IGitFetcher));
+
+            if (descriptor is not null)
+            {
+                services.Remove(descriptor);
+            }
+
+            services.AddScoped<IGitFetcher, TestGitFetcher>();
+
         });
 
         builder.UseEnvironment("Development");
@@ -39,23 +52,6 @@ public class CustomWebApplicationFactory : WebApplicationFactory<WebApi.Program>
         if(context.Database.IsRelational()){
             await context.Database.EnsureCreatedAsync();
         }
-
-        /*var testRepoToBeCloned = "https://github.com/Mlth/test-repo3";
-        var pathToPutClonedRepo = @".\test-repo3\";
-        var pathToClonedRepo = Repository.Clone(testRepoToBeCloned, pathToPutClonedRepo);
-        var repo = new Repository(pathToClonedRepo);
-
-        var commitDateTime1 = DateTimeOffset.Now;
-        var author1 = new Signature("mlth", "mlth@itu.dk", commitDateTime1);
-        var command = new FrequencyCommand();
-
-        repo.Commit("First commit", author1, author1, new CommitOptions(){ AllowEmptyCommit = true });
-
-        Remote remote = repo.Network.Remotes["origin"];
-        var pushRefSpec = @"refs/heads/master";              
-        repo.Network.Push(remote, pushRefSpec);
-
-        await context.SaveChangesAsync();*/
     }
 
     async Task IAsyncLifetime.DisposeAsync()

@@ -16,6 +16,7 @@ public class Program{
             Encrypt=False"));
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
+        builder.Services.AddScoped<IGitFetcher, GitFetcher>();
 
         var app = builder.Build();
 

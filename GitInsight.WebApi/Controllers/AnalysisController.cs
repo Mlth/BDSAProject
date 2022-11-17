@@ -14,9 +14,11 @@ namespace GitInsight.WebApi.Controllers;
 public class AnalysisController : ControllerBase
 {
     private readonly RepositoryContext context;
+    private readonly IGitFetcher fetcher;
 
-    public AnalysisController(RepositoryContext context){
+    public AnalysisController(RepositoryContext context, IGitFetcher fetcher){
         this.context = context;
+        this.fetcher = fetcher;
     }
 
     [HttpGet("{github_user}/{repository_name}/{command}")]
@@ -28,14 +30,13 @@ public class AnalysisController : ControllerBase
         
         var newDir = path + "/" + repository_name;
 
-        string existingRepo = path + "/" + repository_name;
         if(Directory.GetDirectories(path, repository_name).Length < 1){
-            cloneRepository(repositoryPath, newDir);
+            fetcher.cloneRepository(repositoryPath, newDir);
         } else {
-            pullRepository(existingRepo);
+            fetcher.pullRepository(newDir);
         }
 
-        var repository = new Repository(existingRepo);
+        var repository = new Repository(newDir);
         var actualCommand = Factory.getCommand(command);
         actualCommand.template(repository, context);
         var analysis = actualCommand.getAnalysis();
@@ -47,16 +48,6 @@ public class AnalysisController : ControllerBase
         deleteDirectory(newDir);
 
         return jsonString;
-    }
-
-    public static void cloneRepository(string repositoryPath, string newDir){
-        Repository.Clone(repositoryPath, newDir);
-    }
-
-    public static void pullRepository(string repositoryPath){
-        var repository = new Repository(repositoryPath);
-        var signature = new Signature("Lukas", "luel@itu.dk", DateTime.Now);
-        Commands.Pull(repository, signature, null);
     }
 
     public static void deleteDirectory(string path)
