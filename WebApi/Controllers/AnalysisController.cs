@@ -13,13 +13,13 @@ namespace WebApi.Controllers;
 public class AnalysisController : ControllerBase
 {
     [HttpGet("{github_user}/{repository_name}/{command}")]
-    public string Get(string github_user, string repository_name, string command)
+    public async Task<string> Get(string github_user, string repository_name, string command)
     {
         var repositoryPath = "https://github.com/" + github_user + "/" + repository_name + ".git";
         var path = Directory.GetCurrentDirectory();
 
-        WebProgram webProgram = new WebProgram();
-        var jsonString = webProgram.GetAnalysisJsonString(repositoryPath, repository_name, command);
+        WebProgram webProgram = new WebProgram(Program.githubApiKey);
+        var jsonString = await webProgram.GetAnalysisJsonStringAsync(repositoryPath, repository_name, command);
 
         return jsonString;
     }
