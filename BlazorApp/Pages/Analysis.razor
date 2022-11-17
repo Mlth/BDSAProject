@@ -1,0 +1,118 @@
+@page "/Analysis"
+@using System.Net.Http
+@using System.Net.Http.Json
+@using System.Threading.Tasks
+@using System.Linq
+@inject HttpClient Http
+
+<PageTitle>Analysis</PageTitle>
+
+<h1>Analysis</h1>
+
+<RadzenButton Click=@getAuthorAnalysis Text="Author Analysis" />
+<RadzenButton Click=@getFrequencyAnalysis Text="Frequency Analysis" />
+
+@if (isItAuthor == true)
+{
+     <RadzenChart>
+        <RadzenAreaSeries Smooth=true Data="@authorObjects" CategoryProperty="author" ValueProperty="frequency"
+        RenderingOrder="1">
+        </RadzenAreaSeries>
+        <RadzenValueAxis>
+            <RadzenGridLines Visible="true" />
+            <RadzenAxisTitle Text="Commit Frequency" />
+        </RadzenValueAxis>
+    </RadzenChart>
+    @foreach (var author in authorAnalysis)
+    {
+        <p>@author.author</p>
+        @foreach (var freq in @author.frequencies)
+        {
+            <p>@freq.frequency commits on @freq.date.ToString("MMMM dd, yyyy")</p>
+        }
+        
+    }
+}
+
+@if (isItFrequency == true)
+{
+    <RadzenChart>
+        <RadzenAreaSeries Smooth=true Data="@frequencyAnalysis" CategoryProperty="date" ValueProperty="frequency"
+        RenderingOrder="1">
+        </RadzenAreaSeries>
+        <RadzenValueAxis>
+            <RadzenGridLines Visible="true" />
+            <RadzenAxisTitle Text="Commit Frequency" />
+        </RadzenValueAxis>
+    </RadzenChart>
+
+    @foreach (var freq in @frequencyAnalysis)
+    {
+        <p>@freq.frequency commits on @freq.date.ToString("MMMM dd, yyyy")</p>
+    }
+}
+
+
+@code {
+    private AuthorDTO[] authorAnalysis = new AuthorDTO[] { };
+    private AuthorObject[] authorObjects = new AuthorObject[] {};
+    private FrequencyDTO[] frequencyAnalysis = new FrequencyDTO[] { };
+
+    bool isItAuthor;
+    bool isItFrequency;
+
+    bool active = false;
+
+    protected async Task getAuthorAnalysis()
+    {
+        isItAuthor = true;
+        isItFrequency = false;
+
+        if(!active && authorAnalysis.Length == 0) {
+            active = true;
+            authorAnalysis = await Http.GetFromJsonAsync<AuthorDTO[]>("https://localhost:7024/analysis/Mlth/BDSAProject/author");
+            active = false;
+            authorObjects = convertToAuthorObjects();
+        }
+    }
+
+    protected async Task getFrequencyAnalysis()
+    {
+        isItFrequency = true;
+        isItAuthor = false;
+
+        if(!active && frequencyAnalysis.Length == 0) {
+            active = true;
+            frequencyAnalysis = await
+            Http.GetFromJsonAsync<FrequencyDTO[]>("https://localhost:7024/analysis/Mlth/BDSAProject/frequency");
+            active = false;
+        }
+    }
+
+    protected AuthorObject[] convertToAuthorObjects() {
+        var authors = new AuthorObject[authorAnalysis.Length];
+        for(int i = 0; i < authorAnalysis.Length; i++) {
+            AuthorObject author = new AuthorObject{author = authorAnalysis[i].author, frequency = authorAnalysis[i].frequencies.Sum(item => item.frequency)};
+            authors[i] = author;
+        }
+        return authors;
+    }
+
+    public class AuthorDTO
+    {
+        public string author { get; set; }
+        public List<FrequencyDTO> frequencies { get; set; } = new List<FrequencyDTO>();
+    }
+
+    public class AuthorObject 
+    {
+        public string author {get; set;}
+        public int frequency {get; set;}
+    }
+
+    public class FrequencyDTO
+    {
+        public int frequency { get; set; }
+        public DateTime date { get; set; }
+    }
+}

@@ -18,21 +18,8 @@ public class FrequencyAnalysis : IAnalysis
 
     public string analyze()
     {
-        var tempList = new List<string>();
-
-        foreach (FrequencyDTO dto in dtos)
-        {
-            tempList.Add(dto.frequency + " " + dto.date);
-        }
-
-        var frequencyObject = new FrequencyObject
-        {
-            Frequencies = tempList
-        };
-
         var options = new JsonSerializerOptions { WriteIndented = true };
-        var jsonString = JsonSerializer.Serialize(frequencyObject, options);
-
+        var jsonString = JsonSerializer.Serialize(dtos, options);
         return jsonString;
     }
 }
