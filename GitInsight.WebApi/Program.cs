@@ -2,10 +2,12 @@ namespace GitInsight.WebApi;
 using GitInsight.Entities;
 using Microsoft.EntityFrameworkCore;
 
-public class Program{
+public class Program
+{
     public static string githubApiKey;
 
-    public static void Main(String[] args){
+    public static void Main(String[] args)
+    {
         var builder = WebApplication.CreateBuilder(args);
 
         //dotnet user-secrets init
@@ -31,13 +33,19 @@ public class Program{
             app.UseSwagger();
             app.UseSwaggerUI();
         }
-
+        
+        app.UseCors(x => x
+            .AllowAnyMethod()
+            .AllowAnyHeader()
+            .SetIsOriginAllowed(origin => true) // allow any origin  
+            .AllowCredentials());               // allow credentials 
+        
         app.UseHttpsRedirection();
 
         app.UseAuthorization();
 
         app.MapControllers();
-        
+
         app.MapGet("/", () => githubApiKey);
 
         app.Run();
