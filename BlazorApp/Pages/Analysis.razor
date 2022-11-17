@@ -19,7 +19,6 @@
         RenderingOrder="1">
         </RadzenAreaSeries>
     </RadzenChart>
-
     @foreach (var author in authorAnalysis)
     {
         <p>@author.author</p>
@@ -81,7 +80,6 @@
             active = false;
         }
     }
-
 
     protected AuthorObject[] convertToAuthorObjects() {
         var authors = new AuthorObject[authorAnalysis.Length];
