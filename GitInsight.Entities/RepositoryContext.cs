@@ -7,8 +7,7 @@ public class RepositoryContext : DbContext
 
     public DbSet<DBRepository> RepoData { get; set; }
 
-    public RepositoryContext(DbContextOptions<RepositoryContext> options) : base(options)
-    {
+    public RepositoryContext(DbContextOptions<RepositoryContext> options) : base(options){
         
     }
 
@@ -24,9 +23,9 @@ public class RepositoryContext : DbContext
 
             modelBuilder.Entity<DBRepository>(entity =>
             {
-                entity.Property(e => e.name).HasMaxLength(50).IsRequired();
                 entity.Property(e => e.state).HasMaxLength(50).IsRequired();
                 entity.HasMany(s => s.commits).WithOne(s => s.repo);
+                entity.HasKey(e => e.Id);
             });
         }
 }

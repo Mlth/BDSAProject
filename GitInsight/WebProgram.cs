@@ -32,13 +32,15 @@ public class WebProgram
             pullRepository(repositoryLocation);
         }
 
-        var repository = new LibGit2Sharp.Repository(repositoryLocation);
-        var command = Factory.getCommand(inputCommand);
-        command.template(repository, context);
+        RepositoryContextFactory factory = new RepositoryContextFactory();
+        RepositoryContext context = factory.CreateDbContext(new string[] {});
+        var repo = new LibGit2Sharp.Repository(repositoryPath);
+        var command = Factory.getCommandAndIncjectDependencies(inputCommand, repo, context);
+        command.processRepo();
         var analysis = command.getAnalysis();
         var jsonString = analysis.analyze();
-        repository.Dispose();
-        //deleteDirectory(repositoryLocation);
+        repo.Dispose();
+        deleteDirectory(repositoryPath);
         return jsonString;
     }
 

@@ -4,3 +4,4 @@ global using Microsoft.EntityFrameworkCore;
 global using Microsoft.EntityFrameworkCore.Design;
 global using System.Linq;
 global using GitInsight.Entities.DTOS;
+global using GitInsight.Core;

@@ -51,14 +51,15 @@ public class AnalysisController : ControllerBase
             fetcher.pullRepository(repositoryLocation);
         }
 
-        var repository = new LibGit2Sharp.Repository(repositoryLocation);
-        var chosenCommand = Factory.getCommand(command);
-        chosenCommand.template(repository, context);
+        var repo = new LibGit2Sharp.Repository(repositoryLocation);
+        var chosenCommand = Factory.getCommandAndIncjectDependencies(command, repo, context);
+        chosenCommand.processRepo();
         var analysis = chosenCommand.getAnalysis();
         var jsonString = analysis.analyze();
-        repository.Dispose();
+        repo.Dispose();
         //deleteDirectory(repositoryLocation);
         return jsonString;
+
     }
 
     public static void deleteDirectory(string path)

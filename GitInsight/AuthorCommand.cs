@@ -7,10 +7,13 @@ public class AuthorCommand : AbstractCommand {
 
     public IEnumerable<AuthorDTO> authors {get; set;} = new List<AuthorDTO>();
 
-    public override void fetchData(RepositoryContext context)
+    public AuthorCommand(Repository repo, RepositoryContext context) : base(repo, context){
+        
+    }
+
+    public override void fetchData()
     {
-        var repository = new DBRepoRepository(context);
-        IEnumerable<DBCommit> commits = repository.ReadAllCommits(new DBRepositoryDTO{name = repoID});
+        IEnumerable<DBReadCommitDTO> commits = DBRepository.ReadAllCommits(repoID);
         authors = from c in commits
                     group c by c.author into group1
                     select new AuthorDTO{author = group1.Key, frequencies = new List<FrequencyDTO>().Concat(
