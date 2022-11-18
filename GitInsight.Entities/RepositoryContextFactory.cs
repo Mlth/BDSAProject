@@ -10,7 +10,7 @@ public class RepositoryContextFactory : IDesignTimeDbContextFactory<RepositoryCo
     {
         string _conStr = @"
             Server=localhost,1433;
-            Database=GitInsightDB;
+            Database=GitInsightDB4;
             User Id=SA;
             Password=<YourStrong@Passw0rd>;
             Trusted_Connection=False;

@@ -6,9 +6,9 @@ public class Program
     {
         RepositoryContextFactory factory = new RepositoryContextFactory();
         RepositoryContext context = factory.CreateDbContext(args);
-        var repository = new Repository(args[0]);
-        var command = Factory.getCommand(args[1]);
-        command.template(repository, context);
+        var repo = new Repository(args[0]);
+        var command = Factory.getCommandAndIncjectDependencies(args[1], repo, context);
+        command.processRepo();
         var visualizer = command.getVisualizer();
         visualizer.visualize();
     }

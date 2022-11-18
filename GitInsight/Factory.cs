@@ -1,12 +1,12 @@
 namespace GitInsight;
 public class Factory{
     
-    public static AbstractCommand getCommand(string mode){
+    public static AbstractCommand getCommandAndIncjectDependencies(string mode, Repository repo, RepositoryContext context){
         switch (mode){
             case "frequency":
-                return new FrequencyCommand();
+                return new FrequencyCommand(repo, context);
             case "author":
-                return new AuthorCommand();
+                return new AuthorCommand(repo, context);
             default:
                 throw new NotImplementedException();
         }

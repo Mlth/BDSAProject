@@ -3,54 +3,63 @@ using GitInsight.Entities.DTOS;
 
 namespace GitInsight;
 public abstract class AbstractCommand{
-    public String repoID {get; set;}
-    public void template(Repository repo, RepositoryContext context){
+    public String repoID {get; init;}
+    public Repository libGitRepo {get; init;}
+    public RepositoryContext context {get; init;}
+    public DBRepoRepository DBRepository {get; init;}
+
+    public AbstractCommand(Repository repo, RepositoryContext context){
         if (!repo.Commits.Any()){
             throw new NoCommitsException("The repository contains no commits");
         }
         repoID = repo.Commits.LastOrDefault().Sha;
-        //analyseRepoAndUpdate(repo, context);
-        if (needsUpdate(repo, context)){
-            analyseRepoAndUpdate(repo, context);
-            fetchData(context);
+        libGitRepo = repo;
+        this.context = context;
+        DBRepository = new DBRepoRepository(context);
+    }
+    public void processRepo(){
+        if (repoExists()){
+            if (needsUpdate()){
+                analyseRepoAndUpdate();
+            }
         }
-        else {
-            fetchData(context);
+        else{
+            createRepo();
         }
+        fetchData();
     }
 
-    public ICollection<DBCommit> getDBCommits(Repository repo){
-        return (from c in repo.Commits
-                        select new DBCommit{Id = c.Sha, author = c.Author.Name, date = c.Author.When.DateTime, repo = new DBRepository{name = repoID, state = repo.Commits.First().Sha}}).ToList();
-    }
-
-    public ICollection<DBCommit> getUpdatedDBCommits(Repository repo, RepositoryContext context){
-        DBRepoRepository repository = new DBRepoRepository(context);
-        var lastCommit = repository.ReadLastCommit(new DBRepositoryDTO{name = repoID});
-        return (from c in repo.Commits
-                        where c.Author.When > lastCommit.date
-                        select new DBCommit{Id = c.Sha, author = c.Author.Name, date = c.Author.When.DateTime, repo = new DBRepository{name = repoID, state = repo.Commits.First().Sha}}).ToList();
-    }
-
-    public void analyseRepoAndUpdate(Repository repo, RepositoryContext context)
+    public bool createRepo()
     {
-        DBRepoRepository repository = new DBRepoRepository(context);
-        repository.Update(new DBRepositoryDTO{name = repoID, state = repo.Commits.First().Sha, commits = getUpdatedDBCommits(repo, context)});
-        //repository.Update(new DBRepositoryDTO{name = repoID, state = repo.Commits.First().Sha, commits = getDBCommits(repo)});
+        return Response.Created == DBRepository.Create(new DBRepositoryDTO{Id = repoID, state = libGitRepo.Commits.First().Sha, commits = getDBCommits()});
     }
-    public abstract void fetchData(RepositoryContext context);
-    public bool needsUpdate(Repository repo, RepositoryContext context){
-        
-        var repository = new DBRepoRepository(context);
-        var entity = repository.Read(new DBRepositoryDTO{name = repoID});
+
+    public ICollection<DBCommit> getDBCommits(){
+        return (from c in libGitRepo.Commits
+                        select new DBCommit{Id = c.Sha, author = c.Author.Name, date = c.Author.When.DateTime, repo = new DBRepository{Id = repoID, state = libGitRepo.Commits.First().Sha}}).ToList();
+    }
+
+    public void analyseRepoAndUpdate(){
+        DBRepository.Update(new DBUpdateRepositoryDTO{Id = repoID, state = libGitRepo.Commits.First().Sha, commits = getDBCommits()});
+    }
+    public abstract void fetchData();
+    public bool needsUpdate(){
+        var entity = DBRepository.Read(repoID);
         if (entity is not null){
-            if (repo.Commits.First().Sha == entity.state){
+            if (libGitRepo.Commits.First().Sha == entity.state){
                 return false;
             }
             return true;
         }
-        repository.Create(new DBRepositoryDTO{name = repoID, state = repo.Commits.First().Sha, commits = getDBCommits(repo)});
         return false;
+    }
+
+    public bool repoExists(){
+        var entity = DBRepository.Read(repoID);
+        if (entity is null){
+            return false;
+        }
+        return true;
     }
 
     public abstract IVisualizer getVisualizer();
