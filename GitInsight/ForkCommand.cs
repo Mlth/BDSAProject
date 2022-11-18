@@ -12,7 +12,7 @@ public class ForkCommand {
         var client = new GitHubClient(productInformation) { Credentials = credentials };
 
         IReadOnlyList<Octokit.Repository> allForks = await client.Repository.Forks.GetAll("Mlth", "BDSAProject");
-        return from f in allForks select new ForkDTO{url = f.CloneUrl};
+        return from f in allForks select new ForkDTO{url = f.Url};
     }
 
     public async Task<string> getJsonString(string githubApiKey, string username, string repoName)
