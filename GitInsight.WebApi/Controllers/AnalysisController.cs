@@ -54,8 +54,7 @@ public class AnalysisController : ControllerBase
         var repo = new LibGit2Sharp.Repository(repositoryLocation);
         var chosenCommand = Factory.getCommandAndIncjectDependencies(command, repo, context);
         chosenCommand.processRepo();
-        var analysis = chosenCommand.getAnalysis();
-        var jsonString = analysis.analyze();
+        var jsonString = chosenCommand.getJsonString();
         repo.Dispose();
         //deleteDirectory(repositoryLocation);
         return jsonString;

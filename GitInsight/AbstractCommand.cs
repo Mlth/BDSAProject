@@ -61,8 +61,5 @@ public abstract class AbstractCommand{
         }
         return true;
     }
-
-    public abstract IVisualizer getVisualizer();
-
-    public abstract IAnalysis getAnalysis();
+    public abstract string getJsonString();
 }
