@@ -2,7 +2,7 @@ using System.Text.RegularExpressions;
 using GitInsight.Entities.DTOS;
 
 namespace GitInsight;
-public abstract class AbstractCommand{
+public abstract class AbstractCommand {
     public String repoID {get; init;}
     public Repository libGitRepo {get; init;}
     public RepositoryContext context {get; init;}
