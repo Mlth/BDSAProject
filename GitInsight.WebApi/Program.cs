@@ -5,23 +5,17 @@ using Microsoft.EntityFrameworkCore;
 public class Program
 {
     public static string githubApiKey;
+    public static string connectionString;
 
     public static void Main(String[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
 
-        //dotnet user-secrets init
-        //dotnet user-secrets set "Tokens:gitinsight" "YOUR_TOKEN"
         githubApiKey = builder.Configuration["Tokens:gitinsight"];
+        connectionString = builder.Configuration["ConnectionString"];
 
         builder.Services.AddControllers();
-        builder.Services.AddDbContext<RepositoryContext>(opt => opt.UseSqlServer(@"
-            Server=localhost,1433;
-            Database=GitInsightDB4;
-            User Id=SA;
-            Password=<YourStrong@Passw0rd>;
-            Trusted_Connection=False;
-            Encrypt=False"));
+        builder.Services.AddDbContext<RepositoryContext>(opt => opt.UseSqlServer(connectionString));
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
         builder.Services.AddScoped<IGitFetcher, GitFetcher>();
@@ -47,6 +41,7 @@ public class Program
         app.MapControllers();
 
         app.MapGet("/", () => githubApiKey);
+        app.MapGet("/", () => connectionString);
 
         app.Run();
     }
