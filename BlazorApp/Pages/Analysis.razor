@@ -4,6 +4,7 @@
 @using System.Threading.Tasks
 @using System.Linq
 @using System
+@using GitInsight.Entities.DTOS
 @inject HttpClient Http
 
 <PageTitle>Analysis</PageTitle>
@@ -114,21 +115,9 @@
         repository = value;
     }
 
-    public class AuthorDTO
-    {
-        public string author { get; set; }
-        public List<FrequencyDTO> frequencies { get; set; } = new List<FrequencyDTO>();
-    }
-
-    public class AuthorObject 
+    public record AuthorObject 
     {
         public string author {get; set;}
         public int frequency {get; set;}
-    }
-
-    public class FrequencyDTO
-    {
-        public int frequency { get; set; }
-        public DateTime date { get; set; }
     }
 }
