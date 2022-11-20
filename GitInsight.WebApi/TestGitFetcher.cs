@@ -1,6 +1,7 @@
 namespace GitInsight.WebApi;
 using LibGit2Sharp;
 
+//If changes are made to the cloneRepository method, remember to delete the two TestRepo folders in the repository folder, as they are not updated otherwise.
 public class TestGitFetcher : IGitFetcher {
     public void cloneRepository(string repositoryPath, string newDir){
         var repo = new Repository(Repository.Init(newDir));

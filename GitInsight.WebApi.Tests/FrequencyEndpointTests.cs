@@ -16,7 +16,7 @@ public class FrequencyEndpointTest : IClassFixture<CustomWebApplicationFactory> 
     [Fact, TestPriority(0)]
     public async Task Get()
     {
-        var frequencies = await client.GetFromJsonAsync<FrequencyDTO[]>("analysis/TestUser/TestRepo/frequency");
+        var frequencies = await client.GetFromJsonAsync<FrequencyDTO[]>("analysis/TestUser/TestRepo1/frequency");
 
         var commitDate1 = frequencies[0].date.ToString("dd-MM-yyyy");
         var commitDate2 = frequencies[1].date.ToString("dd-MM-yyyy");

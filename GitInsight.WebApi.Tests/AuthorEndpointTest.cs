@@ -15,8 +15,7 @@ public class AuthorEndpointTest : IClassFixture<CustomWebApplicationFactory> {
     [Fact, TestPriority(0)]
     public async Task Get()
     {
-        Thread.Sleep(5000);
-        var authors = await client.GetFromJsonAsync<AuthorDTO[]>("analysis/TestUser/TestRepo/author");
+        var authors = await client.GetFromJsonAsync<AuthorDTO[]>("analysis/TestUser/TestRepo2/author");
 
         var commitDateTime1 = new DateTime(2022, 10, 01);
         var commitDateTime2 = new DateTime(2022, 10, 02);

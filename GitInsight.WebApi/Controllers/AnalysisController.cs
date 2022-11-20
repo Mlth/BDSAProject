@@ -28,7 +28,7 @@ public class AnalysisController : ControllerBase
     public async Task<string> Get(string github_user, string repository_name, string command)
     {
         var repositoryLink = "https://github.com/" + github_user + "/" + repository_name + ".git";
-        var path = Directory.GetCurrentDirectory();
+        var currentPath = Directory.GetCurrentDirectory();
 
         var productInformation = new ProductHeaderValue("luel");
         var credentials = new Octokit.Credentials(githubApiKey);
@@ -39,16 +39,20 @@ public class AnalysisController : ControllerBase
         /*foreach (Octokit.Repository fork in allForks){s
             Console.WriteLine(fork.CloneUrl);
         }*/
-        
-        var repositories = @".\Repositories\";
-        /*foreach(string s in Directory.GetDirectories(Directory.GetCurrentDirectory(), repository_name)){
+
+        var repositories = Directory.GetParent(currentPath) + "/Repositories/";
+        if(!Directory.Exists(repositories)){
+            Directory.CreateDirectory(repositories);
+        }
+        foreach(string s in Directory.GetDirectories(Directory.GetCurrentDirectory(), repository_name)){
             Console.WriteLine(s);
-        }*/
+        }
+        
         var repositoryLocation = repositories + repository_name;
-        if(!Directory.Exists(repositoryLocation)){
+        if(Directory.GetDirectories(repositories, repository_name).Length < 1){
             fetcher.cloneRepository(repositoryLink, repositoryLocation);
         } else {
-          fetcher.pullRepository(repositoryLocation);
+            fetcher.pullRepository(repositoryLocation);
         }
 
         var repo = new LibGit2Sharp.Repository(repositoryLocation);
@@ -58,7 +62,7 @@ public class AnalysisController : ControllerBase
         var jsonString = analysis.analyze();
         repo.Dispose();
 
-        deleteDirectory(repositoryLocation);
+        //deleteDirectory(repositoryLocation);
         
         return jsonString;
 
