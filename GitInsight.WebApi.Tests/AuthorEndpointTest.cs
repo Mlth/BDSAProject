@@ -18,8 +18,8 @@ public class AuthorEndpointTest : IClassFixture<CustomWebApplicationFactory> {
         Thread.Sleep(5000);
         var authors = await client.GetFromJsonAsync<AuthorDTO[]>("analysis/TestUser/TestRepo/author");
 
-        var commitDateTime1 = new DateTime(2022, 10, 10);
-        var commitDateTime2 = new DateTime(2022, 10, 11);
+        var commitDateTime1 = new DateTime(2022, 10, 01);
+        var commitDateTime2 = new DateTime(2022, 10, 02);
 
         Assert.Equal("aarv", authors[0].author);
         Assert.Equivalent(new List<FrequencyDTO>{new FrequencyDTO {date = commitDateTime2, frequency = 1}, new FrequencyDTO {date = commitDateTime1, frequency = 1}}, authors[0].frequencies);

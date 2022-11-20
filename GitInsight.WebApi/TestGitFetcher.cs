@@ -6,11 +6,11 @@ public class TestGitFetcher : IGitFetcher {
         var repo = new Repository(Repository.Init(newDir));
 
         //Tilføjt nogle commits
-        var commitDateTime1 = new DateTime(2022, 10, 10);
+        var commitDateTime1 = new DateTime(2022, 10, 01);
         var author1 = new Signature("mlth", "mlth@itu.dk", commitDateTime1);
-        var commitDateTime2 = new DateTime(2022, 10, 10);
+        var commitDateTime2 = new DateTime(2022, 10, 01);
         var author2 = new Signature("aarv", "aarv@itu.dk", commitDateTime2);
-        var commitDateTime3 = new DateTime(2022, 10, 11);
+        var commitDateTime3 = new DateTime(2022, 10, 02);
         var author3 = new Signature("aarv", "aarv@itu.dk", commitDateTime3);
 
         //Act
@@ -20,6 +20,6 @@ public class TestGitFetcher : IGitFetcher {
     }
 
     public void pullRepository(string repositoryPath){
-        
+
     }
 }
