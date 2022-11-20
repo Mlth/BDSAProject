@@ -20,8 +20,6 @@ public class TestGitFetcher : IGitFetcher {
     }
 
     public void pullRepository(string repositoryPath){
-        var repository = new Repository(repositoryPath);
-        var signature = new Signature("Lukas", "luel@itu.dk", DateTime.Now);
-        Commands.Pull(repository, signature, null);
+        
     }
 }

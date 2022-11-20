@@ -58,8 +58,7 @@ public class AnalysisController : ControllerBase
         var jsonString = analysis.analyze();
         repo.Dispose();
 
-        //Delete skal måske udkommenteres
-        deleteDirectory(repositoryLocation);
+        //deleteDirectory(repositoryLocation);
         
         return jsonString;
 
