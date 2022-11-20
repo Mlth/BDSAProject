@@ -36,19 +36,19 @@ public class AnalysisController : ControllerBase
 
         IReadOnlyList<Octokit.Repository> allForks = await client.Repository.Forks.GetAll(
             "Mlth", "BDSAProject");
-        /*foreach (Octokit.Repository fork in allForks){
+        /*foreach (Octokit.Repository fork in allForks){s
             Console.WriteLine(fork.CloneUrl);
         }*/
         
-        var repositories = Directory.GetParent(Directory.GetCurrentDirectory()) + "/Repositories/";
-        foreach(string s in Directory.GetDirectories(Directory.GetCurrentDirectory(), repository_name)){
+        var repositories = @".\Repositories\";
+        /*foreach(string s in Directory.GetDirectories(Directory.GetCurrentDirectory(), repository_name)){
             Console.WriteLine(s);
-        }
+        }*/
         var repositoryLocation = repositories + repository_name;
-        if(Directory.GetDirectories(repositories, repository_name).Length < 1){
+        if(!Directory.Exists(repositoryLocation)){
             fetcher.cloneRepository(repositoryLink, repositoryLocation);
         } else {
-            fetcher.pullRepository(repositoryLocation);
+          fetcher.pullRepository(repositoryLocation);
         }
 
         var repo = new LibGit2Sharp.Repository(repositoryLocation);
@@ -58,7 +58,7 @@ public class AnalysisController : ControllerBase
         var jsonString = analysis.analyze();
         repo.Dispose();
 
-        //deleteDirectory(repositoryLocation);
+        deleteDirectory(repositoryLocation);
         
         return jsonString;
 
