@@ -28,7 +28,7 @@ public class AnalysisController : ControllerBase
     public async Task<string> Get(string github_user, string repository_name, string command)
     {
         var repositoryLink = "https://github.com/" + github_user + "/" + repository_name + ".git";
-        var path = Directory.GetCurrentDirectory();
+        var currentPath = Directory.GetCurrentDirectory();
 
         var productInformation = new ProductHeaderValue("luel");
         var credentials = new Octokit.Credentials(githubApiKey);
@@ -36,14 +36,18 @@ public class AnalysisController : ControllerBase
 
         IReadOnlyList<Octokit.Repository> allForks = await client.Repository.Forks.GetAll(
             "Mlth", "BDSAProject");
-        /*foreach (Octokit.Repository fork in allForks){
+        /*foreach (Octokit.Repository fork in allForks){s
             Console.WriteLine(fork.CloneUrl);
         }*/
-        
-        var repositories = Directory.GetParent(Directory.GetCurrentDirectory()) + "/Repositories/";
+
+        var repositories = Directory.GetParent(currentPath) + "/Repositories/";
+        if(!Directory.Exists(repositories)){
+            Directory.CreateDirectory(repositories);
+        }
         foreach(string s in Directory.GetDirectories(Directory.GetCurrentDirectory(), repository_name)){
             Console.WriteLine(s);
         }
+        
         var repositoryLocation = repositories + repository_name;
         if(Directory.GetDirectories(repositories, repository_name).Length < 1){
             fetcher.cloneRepository(repositoryLink, repositoryLocation);
@@ -57,7 +61,9 @@ public class AnalysisController : ControllerBase
         var analysis = chosenCommand.getAnalysis();
         var jsonString = analysis.analyze();
         repo.Dispose();
+
         //deleteDirectory(repositoryLocation);
+        
         return jsonString;
 
     }
