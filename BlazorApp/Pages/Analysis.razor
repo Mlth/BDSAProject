@@ -3,11 +3,22 @@
 @using System.Net.Http.Json
 @using System.Threading.Tasks
 @using System.Linq
+@using System
+@using GitInsight.Entities.DTOS
 @inject HttpClient Http
 
 <PageTitle>Analysis</PageTitle>
 
 <h1>Analysis</h1>
+
+<div class="row px-3">
+        <div class="col-md-6 col-lg-4 p-3">
+            <RadzenCard>
+                <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.H3">Input your repository:</RadzenText>
+                <RadzenTextBox Change=@(args => OnChange(args, "TextBox")) Class="w-100" />
+            </RadzenCard>
+        </div>
+</div>
 
 <RadzenButton Click=@getAuthorAnalysis Text="Author Analysis" />
 <RadzenButton Click=@getFrequencyAnalysis Text="Frequency Analysis" />
@@ -15,9 +26,8 @@
 @if (isItAuthor == true)
 {
      <RadzenChart>
-        <RadzenAreaSeries Smooth=true Data="@authorObjects" CategoryProperty="author" ValueProperty="frequency"
-        RenderingOrder="1">
-        </RadzenAreaSeries>
+        <RadzenPieSeries Data="@authorObjects" Title="Author Frequency" CategoryProperty="author" ValueProperty="frequency">
+        </RadzenPieSeries>
         <RadzenValueAxis>
             <RadzenGridLines Visible="true" />
             <RadzenAxisTitle Text="Commit Frequency" />
@@ -58,6 +68,8 @@
     private AuthorObject[] authorObjects = new AuthorObject[] {};
     private FrequencyDTO[] frequencyAnalysis = new FrequencyDTO[] { };
 
+    private string repository;
+
     bool isItAuthor;
     bool isItFrequency;
 
@@ -68,9 +80,9 @@
         isItAuthor = true;
         isItFrequency = false;
 
-        if(!active && authorAnalysis.Length == 0) {
+        if(!active && repository != null) {
             active = true;
-            authorAnalysis = await Http.GetFromJsonAsync<AuthorDTO[]>("https://localhost:7024/analysis/Mlth/BDSAProject/author");
+            authorAnalysis = await Http.GetFromJsonAsync<AuthorDTO[]>("https://localhost:7024/analysis/" + repository + "/author");
             active = false;
             authorObjects = convertToAuthorObjects();
         }
@@ -81,10 +93,10 @@
         isItFrequency = true;
         isItAuthor = false;
 
-        if(!active && frequencyAnalysis.Length == 0) {
+        if(!active && repository != null) {
             active = true;
             frequencyAnalysis = await
-            Http.GetFromJsonAsync<FrequencyDTO[]>("https://localhost:7024/analysis/Mlth/BDSAProject/frequency");
+            Http.GetFromJsonAsync<FrequencyDTO[]>("https://localhost:7024/analysis/" + repository + "/frequency");
             active = false;
         }
     }
@@ -98,21 +110,14 @@
         return authors;
     }
 
-    public class AuthorDTO
+    void OnChange(string value, string name)
     {
-        public string author { get; set; }
-        public List<FrequencyDTO> frequencies { get; set; } = new List<FrequencyDTO>();
+        repository = value;
     }
 
-    public class AuthorObject 
+    public record AuthorObject 
     {
         public string author {get; set;}
         public int frequency {get; set;}
-    }
-
-    public class FrequencyDTO
-    {
-        public int frequency { get; set; }
-        public DateTime date { get; set; }
     }
 }
