@@ -30,7 +30,7 @@ public class AnalysisController : ControllerBase
         var repositoryLink = "https://github.com/" + github_user + "/" + repository_name + ".git";
         var path = Directory.GetCurrentDirectory();
 
-        var productInformation = new ProductHeaderValue("luel");
+        /*var productInformation = new ProductHeaderValue("luel");
         var credentials = new Octokit.Credentials(githubApiKey);
         var client = new GitHubClient(productInformation) { Credentials = credentials };
 
