@@ -18,7 +18,6 @@ public class FrequencyEndpointTest : IClassFixture<CustomWebApplicationFactory> 
     {
         var frequencies = await client.GetFromJsonAsync<FrequencyDTO[]>("analysis/TestUser/TestRepo/frequency");
 
-        DateTimeFormatInfo dtfi = CultureInfo.CreateSpecificCulture("da-DK").DateTimeFormat;
         var commitDate1 = frequencies[0].date.ToString("dd-MM-yyyy");
         var commitDate2 = frequencies[1].date.ToString("dd-MM-yyyy");
 
