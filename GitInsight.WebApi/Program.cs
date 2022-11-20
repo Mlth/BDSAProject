@@ -17,7 +17,7 @@ public class Program
         builder.Services.AddControllers();
         builder.Services.AddDbContext<RepositoryContext>(opt => opt.UseSqlServer(@"
             Server=localhost,1433;
-            Database=GitInsightDB4;
+            Database=GitInsightDB2;
             User Id=SA;
             Password=<YourStrong@Passw0rd>;
             Trusted_Connection=False;
