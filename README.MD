@@ -12,7 +12,8 @@ docker exec -it sql1 "bash"
 CREATE DATABASE GitInsightDB;
 GO
 
-Fjern migrations mappen, gå ind i Entities mappen i en terminal, og skriv:
+Fjern migrations mappen i entities mappen (hvis den er der).
+Gå ind i Entities mappen i en terminal, og skriv følgende kommandoer:
 dotnet ef migrations add InitialCreate
 dotnet ef database update
 

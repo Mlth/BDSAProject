@@ -1,10 +1,7 @@
 using Newtonsoft.Json;
 using GitInsight.Entities.DTOS;
-using System.Globalization;
 
 namespace GitInsight.WebApi.Tests;
-
-[TestCaseOrderer("GitInsight.WebApi.Tests.PriorityOrderer", "GitInsight.WebApi.Tests")]
 public class FrequencyEndpointTest : IClassFixture<CustomWebApplicationFactory> {
 
     private readonly HttpClient client;
@@ -13,19 +10,17 @@ public class FrequencyEndpointTest : IClassFixture<CustomWebApplicationFactory> 
         client = factory.CreateClient();
     }
 
-    [Fact, TestPriority(0)]
+    [Fact]
     public async Task Get()
     {
         var frequencies = await client.GetFromJsonAsync<FrequencyDTO[]>("analysis/TestUser/TestRepo1/frequency");
 
-        var commitDate1 = frequencies[0].date.ToString("dd-MM-yyyy");
-        var commitDate2 = frequencies[1].date.ToString("dd-MM-yyyy");
+        var commitDate1 = frequencies![0].date;
+        var commitDate2 = frequencies![1].date;
 
-        //Assert.Equal<Object>($"2 {commitDateTime}", frequencyArray[0]);
         Assert.Equal(2, frequencies[0].frequency);
-        Assert.Equal("01-10-2022", commitDate1);
+        Assert.Equivalent(new DateTime(2022, 10, 01), commitDate1);
         Assert.Equal(1, frequencies[1].frequency);
-        Assert.Equal("02-10-2022", commitDate2);
+        Assert.Equal(new DateTime(2022, 10, 02), commitDate2);
     }
-
 }
