@@ -3,20 +3,18 @@
 @using System.Net.Http.Json
 @using System.Threading.Tasks
 @using System.Linq
-@using System
+@using GitInsight.Entities.DTOS
 @inject HttpClient Http
 
 <PageTitle>Analysis</PageTitle>
 
 <h1>Analysis</h1>
 
-<div class="row px-3">
-        <div class="col-md-6 col-lg-4 p-3">
-            <RadzenCard>
-                <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.H3">Input your repository:</RadzenText>
-                <RadzenTextBox Change=@(args => OnChange(args, "TextBox")) Class="w-100" />
-            </RadzenCard>
-        </div>
+<div class="col-md-6 col-lg-4 p-3">
+    <RadzenCard>
+        <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.H3">Input a GitHub identifier</RadzenText>
+        <RadzenTextBox Placeholder="github_user/repository_name" Change=@(args => OnChange(args, "TextBox with placeholder")) Class="w-100" />
+    </RadzenCard>
 </div>
 
 <RadzenButton Click=@getAuthorAnalysis Text="Author Analysis" />
@@ -24,48 +22,67 @@
 
 @if (isItAuthor == true)
 {
-     <RadzenChart>
-        <RadzenPieSeries Data="@authorObjects" Title="Author Frequency" CategoryProperty="author" ValueProperty="frequency">
-        </RadzenPieSeries>
+    <RadzenChart>
+        <RadzenPieSeries Data="@authorObjects" Title="Author Frequency" CategoryProperty="author" ValueProperty="frequency"></RadzenPieSeries>
         <RadzenValueAxis>
             <RadzenGridLines Visible="true" />
             <RadzenAxisTitle Text="Commit Frequency" />
         </RadzenValueAxis>
     </RadzenChart>
+    
     @foreach (var author in authorAnalysis)
     {
-        <p>@author.author</p>
-        @foreach (var freq in @author.frequencies)
-        {
-            <p>@freq.frequency commits on @freq.date.ToString("MMMM dd, yyyy")</p>
-        }
-        
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>@author.author</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var freq in @author.frequencies)
+                {
+                    <tr>
+                        <td>@freq.frequency commits on @freq.date.ToString("dd/MM/yyyy")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
     }
 }
 
 @if (isItFrequency == true)
 {
     <RadzenChart>
-        <RadzenAreaSeries Smooth=true Data="@frequencyAnalysis" CategoryProperty="date" ValueProperty="frequency"
-        RenderingOrder="1">
-        </RadzenAreaSeries>
+        <RadzenAreaSeries Smooth=true Data="@frequencyAnalysis" CategoryProperty="date" Title="Commits" ValueProperty="frequency" RenderingOrder="1"></RadzenAreaSeries>
         <RadzenValueAxis>
             <RadzenGridLines Visible="true" />
             <RadzenAxisTitle Text="Commit Frequency" />
         </RadzenValueAxis>
     </RadzenChart>
 
-    @foreach (var freq in @frequencyAnalysis)
-    {
-        <p>@freq.frequency commits on @freq.date.ToString("MMMM dd, yyyy")</p>
-    }
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Number of commits</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var freq in @frequencyAnalysis)
+        {
+            <tr>
+                <td>@freq.frequency</td>
+                <td>@freq.date.ToString("dd/MM/yyyy")</td>
+            </tr>
+        }
+        </tbody>
+    </table>
 }
 
-
 @code {
-    private AuthorDTO[] authorAnalysis = new AuthorDTO[] { };
+    private AuthorDTO[] authorAnalysis = new AuthorDTO[] {};
     private AuthorObject[] authorObjects = new AuthorObject[] {};
-    private FrequencyDTO[] frequencyAnalysis = new FrequencyDTO[] { };
+    private FrequencyDTO[] frequencyAnalysis = new FrequencyDTO[] {};
 
     private string repository;
 
@@ -92,7 +109,8 @@
         isItFrequency = true;
         isItAuthor = false;
 
-        if(!active && repository != null) {
+        if(!active && repository != null) 
+        {
             active = true;
             frequencyAnalysis = await
             Http.GetFromJsonAsync<FrequencyDTO[]>("https://localhost:7024/analysis/" + repository + "/frequency");
@@ -100,9 +118,11 @@
         }
     }
 
-    protected AuthorObject[] convertToAuthorObjects() {
+    protected AuthorObject[] convertToAuthorObjects() 
+    {
         var authors = new AuthorObject[authorAnalysis.Length];
-        for(int i = 0; i < authorAnalysis.Length; i++) {
+        for(int i = 0; i < authorAnalysis.Length; i++) 
+        {
             AuthorObject author = new AuthorObject{author = authorAnalysis[i].author, frequency = authorAnalysis[i].frequencies.Sum(item => item.frequency)};
             authors[i] = author;
         }
@@ -114,21 +134,9 @@
         repository = value;
     }
 
-    public class AuthorDTO
-    {
-        public string author { get; set; }
-        public List<FrequencyDTO> frequencies { get; set; } = new List<FrequencyDTO>();
-    }
-
-    public class AuthorObject 
+    public record AuthorObject 
     {
         public string author {get; set;}
         public int frequency {get; set;}
-    }
-
-    public class FrequencyDTO
-    {
-        public int frequency { get; set; }
-        public DateTime date { get; set; }
     }
 }
