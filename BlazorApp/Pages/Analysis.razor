@@ -19,6 +19,7 @@
 
 <RadzenButton Click=@getAuthorAnalysis Text="Author Analysis" />
 <RadzenButton Click=@getFrequencyAnalysis Text="Frequency Analysis" />
+<RadzenButton Click=@getForkAnalysis Text="Fork Analysis" />
 
 @if (isItAuthor == true)
 {
@@ -79,15 +80,36 @@
     </table>
 }
 
+@if (isItFork == true)
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Forks</th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var fork in @forkAnalysis)
+        {
+            <tr>
+                <td>@fork.url</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+
 @code {
     private AuthorDTO[] authorAnalysis = new AuthorDTO[] {};
     private AuthorObject[] authorObjects = new AuthorObject[] {};
-    private FrequencyDTO[] frequencyAnalysis = new FrequencyDTO[] {};
+    private FrequencyDTO[] frequencyAnalysis = new FrequencyDTO[] {}; 
+    private ForkDTO[] forkAnalysis = new ForkDTO[] {}; 
 
     private string repository;
 
     bool isItAuthor;
     bool isItFrequency;
+    bool isItFork;
 
     bool active = false;
 
@@ -95,6 +117,7 @@
     {
         isItAuthor = true;
         isItFrequency = false;
+        isItFork = false;
 
         if(!active && repository != null) {
             active = true;
@@ -108,12 +131,28 @@
     {
         isItFrequency = true;
         isItAuthor = false;
+        isItFork = false;
 
         if(!active && repository != null) 
         {
             active = true;
             frequencyAnalysis = await
             Http.GetFromJsonAsync<FrequencyDTO[]>("https://localhost:7024/analysis/" + repository + "/frequency");
+            active = false;
+        }
+    }
+
+    protected async Task getForkAnalysis()
+    {
+        isItFork = true;
+        isItFrequency = false;
+        isItAuthor = false;
+
+        if(!active && repository != null) 
+        {
+            active = true;
+            forkAnalysis = await
+            Http.GetFromJsonAsync<ForkDTO[]>("https://localhost:7024/fork/" + repository);
             active = false;
         }
     }
