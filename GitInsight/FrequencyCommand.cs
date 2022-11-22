@@ -2,6 +2,7 @@ namespace GitInsight;
 using LibGit2Sharp;
 using GitInsight.Entities.DTOS;
 using GitInsight.Entities;
+using System.Text.Json;
 
 public class FrequencyCommand : AbstractCommand {
 
@@ -17,14 +18,10 @@ public class FrequencyCommand : AbstractCommand {
                     group c by c.date.Date into group1
                     select new FrequencyDTO{date = group1.Key, frequency = group1.Count()}).OrderBy(x => x.date.Date).ToList();
     }
-
-    public override IVisualizer getVisualizer()
+    public override string getJsonString()
     {
-        return new FrequencyVisualizer(frequencies);
-    }
-
-    public override IAnalysis getAnalysis()
-    {
-         return new FrequencyAnalysis(frequencies);
+        var options = new JsonSerializerOptions { WriteIndented = true };
+        var jsonString = JsonSerializer.Serialize(frequencies, options);
+        return jsonString;
     }
 }
