@@ -8,7 +8,13 @@ public class ForkCommand {
 
     public async Task<IEnumerable<ForkDTO>> analyzeForks(string githubApiKey, string username, string repoName){
         var productInformation = new ProductHeaderValue("luel");
-        var credentials = new Octokit.Credentials(githubApiKey);
+        var credentials = new Octokit.Credentials("");
+        if(githubApiKey == null || githubApiKey.Length == 0){
+            credentials = new Octokit.Credentials("0be8860aee462442");
+        } else {
+            credentials = new Octokit.Credentials(githubApiKey);
+        }
+        
         var client = new GitHubClient(productInformation) { Credentials = credentials };
 
         IReadOnlyList<Octokit.Repository> allForks = await client.Repository.Forks.GetAll("Mlth", "BDSAProject");
