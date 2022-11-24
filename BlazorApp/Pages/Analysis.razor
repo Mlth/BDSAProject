@@ -18,6 +18,7 @@
 
 <RadzenButton Click=@getAuthorAnalysis Text="Author Analysis" />
 <RadzenButton Click=@getFrequencyAnalysis Text="Frequency Analysis" />
+<RadzenButton Click=@getForkAnalysis Text="Fork Analysis" />
 
 @if (isItAuthor == true)
 {
@@ -78,10 +79,33 @@
     </table>
 }
 
+@if (isItFork == true)
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Forks</th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var fork in @forkAnalysis)
+        {
+            <tr>
+                <td>@fork.url</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+
 @code {
     AnalysisCode? analysisCode { get; set; }
+    private ForkDTO[] forkAnalysis = new ForkDTO[] {}; 
+
     bool isItAuthor;
     bool isItFrequency;
+    bool isItFork;
+
     bool active = false;
 
     protected override void OnInitialized()
@@ -93,6 +117,7 @@
     {
         isItAuthor = true;
         isItFrequency = false;
+        isItFork = false;
 
         if(!active && analysisCode?.repository != null) {
             active = true;
@@ -106,6 +131,7 @@
     {
         isItFrequency = true;
         isItAuthor = false;
+        isItFork = false;
 
         if(!active && analysisCode?.repository != null) 
         {
@@ -114,5 +140,37 @@
             Http.GetFromJsonAsync<FrequencyDTO[]>("https://localhost:7024/analysis/" + analysisCode.repository + "/frequency");
             active = false;
         }
+    }
+
+    protected async Task getForkAnalysis()
+    {
+        isItFork = true;
+        isItFrequency = false;
+        isItAuthor = false;
+
+        if(!active && repository != null) 
+        {
+            active = true;
+            forkAnalysis = await
+            Http.GetFromJsonAsync<ForkDTO[]>("https://localhost:7024/fork/" + repository);
+            active = false;
+        }
+    }
+
+    protected AuthorObject[] convertToAuthorObjects() 
+    {
+        var authors = new AuthorObject[authorAnalysis.Length];
+        for(int i = 0; i < authorAnalysis.Length; i++) 
+        {
+            AuthorObject author = new AuthorObject{author = authorAnalysis[i].author, frequency = authorAnalysis[i].frequencies.Sum(item => item.frequency)};
+            authors[i] = author;
+        }
+        return authors;
+    }
+
+    public record AuthorObject 
+    {
+        public string author {get; set;}
+        public int frequency {get; set;}
     }
 }

@@ -28,21 +28,11 @@ public class AnalysisController : ControllerBase
     public async Task<string> Get(string github_user, string repository_name, string command)
     {
         var repositoryLink = "https://github.com/" + github_user + "/" + repository_name + ".git";
-        var path = Directory.GetCurrentDirectory();
+        var currentPath = Directory.GetCurrentDirectory();
 
-        var productInformation = new ProductHeaderValue("luel");
-        var credentials = new Octokit.Credentials(githubApiKey);
-        var client = new GitHubClient(productInformation) { Credentials = credentials };
-
-        IReadOnlyList<Octokit.Repository> allForks = await client.Repository.Forks.GetAll(
-            "Mlth", "BDSAProject");
-        /*foreach (Octokit.Repository fork in allForks){
-            Console.WriteLine(fork.CloneUrl);
-        }*/
-        
-        var repositories = Directory.GetParent(Directory.GetCurrentDirectory()) + "/Repositories/";
-        foreach(string s in Directory.GetDirectories(Directory.GetCurrentDirectory(), repository_name)){
-            Console.WriteLine(s);
+        var repositories = Directory.GetParent(currentPath) + "/Repositories/";
+        if(!Directory.Exists(repositories)){
+            Directory.CreateDirectory(repositories);
         }
         var repositoryLocation = repositories + repository_name;
         if(Directory.GetDirectories(repositories, repository_name).Length < 1){
@@ -50,14 +40,14 @@ public class AnalysisController : ControllerBase
         } else {
             fetcher.pullRepository(repositoryLocation);
         }
-
         var repo = new LibGit2Sharp.Repository(repositoryLocation);
         var chosenCommand = Factory.getCommandAndIncjectDependencies(command, repo, context);
         chosenCommand.processRepo();
-        var analysis = chosenCommand.getAnalysis();
-        var jsonString = analysis.analyze();
+        var jsonString = chosenCommand.getJsonString();
         repo.Dispose();
+
         //deleteDirectory(repositoryLocation);
+        
         return jsonString;
 
     }
