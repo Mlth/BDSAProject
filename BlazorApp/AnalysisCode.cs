@@ -12,12 +12,15 @@ public sealed class AnalysisCode
     public AuthorDTO[] authorAnalysis { get; set; }
     public AuthorObject[] authorObjects { get; set; }
     public FrequencyDTO[] frequencyAnalysis { get; set; }
+    public ForkDTO[] forkAnalysis { get; set; }
 
     private AnalysisCode() 
     {
         authorAnalysis = new AuthorDTO[] {};
         authorObjects = new AuthorObject[] {};
         frequencyAnalysis = new FrequencyDTO[] {};
+        forkAnalysis = new ForkDTO[] {}; 
+
     }
 
     public static AnalysisCode Instance 

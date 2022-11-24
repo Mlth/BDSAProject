@@ -88,7 +88,7 @@
             </tr>
         </thead>
         <tbody>
-        @foreach (var fork in @forkAnalysis)
+        @foreach (var fork in @analysisCode.forkAnalysis)
         {
             <tr>
                 <td>@fork.url</td>
@@ -100,8 +100,6 @@
 
 @code {
     AnalysisCode? analysisCode { get; set; }
-    private ForkDTO[] forkAnalysis = new ForkDTO[] {}; 
-
     bool isItAuthor;
     bool isItFrequency;
     bool isItFork;
@@ -148,17 +146,18 @@
         isItFrequency = false;
         isItAuthor = false;
 
-        if(!active && repository != null) 
+        if(!active && analysisCode.repository != null) 
         {
             active = true;
-            forkAnalysis = await
-            Http.GetFromJsonAsync<ForkDTO[]>("https://localhost:7024/fork/" + repository);
+            analysisCode.forkAnalysis = await
+            Http.GetFromJsonAsync<ForkDTO[]>("https://localhost:7024/fork/" + analysisCode.repository);
             active = false;
         }
     }
 
     protected AuthorObject[] convertToAuthorObjects() 
     {
+        var authorAnalysis = analysisCode.authorAnalysis;
         var authors = new AuthorObject[authorAnalysis.Length];
         for(int i = 0; i < authorAnalysis.Length; i++) 
         {
