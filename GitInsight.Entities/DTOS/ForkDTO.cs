@@ -2,6 +2,6 @@ namespace GitInsight.Entities.DTOS;
 
 public record ForkDTO{
     
-    public string url;
+    public string url {get;set;}
 
 }

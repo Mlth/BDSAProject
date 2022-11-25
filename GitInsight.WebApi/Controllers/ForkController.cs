@@ -23,6 +23,7 @@ public class ForkController : ControllerBase
         var repositoryLink = "https://github.com/" + github_user + "/" + repository_name + ".git";
         var forkCommand = new ForkCommand();
         var jsonString =  await forkCommand.getJsonString(githubApiKey, github_user, repository_name);
+        Console.WriteLine(jsonString);
         return jsonString;
         //deleteDirectory(repositoryLocation);
 
