@@ -6,7 +6,7 @@ using System.Text.Json;
 
 public class FilesCommand : AbstractCommand {
 
-    public Dictionary<string,IEnumerable<String>> commitIDAndChanges {get; set;} = new Dictionary<string, IEnumerable<string>>();
+    public Dictionary<string,IEnumerable<String>> commitWhenAndWhat {get; set;} = new Dictionary<string, IEnumerable<string>>();
 
     public FilesCommand(Repository repo, RepositoryContext context) : base(repo, context){
         
@@ -28,7 +28,7 @@ public class FilesCommand : AbstractCommand {
             changes.Add(ptc.Status +" -> "+ptc.Path);
             Console.WriteLine(ptc.Status +" -> "+ptc.Path); // Status -> File Path
         }
-        commitIDAndChanges.Add(c.Id.ToString(),changes);
+        commitWhenAndWhat.Add(c.Author.When.DateTime.ToString(),changes);
         CompareTrees(parentCommit, repo);
     }
 
@@ -40,7 +40,7 @@ public class FilesCommand : AbstractCommand {
     public override string getJsonString()
     {
         var options = new JsonSerializerOptions { WriteIndented = true };
-        var jsonString = JsonSerializer.Serialize(commitIDAndChanges, options);
+        var jsonString = JsonSerializer.Serialize(commitWhenAndWhat, options);
 
         return jsonString;
     }
