@@ -7,6 +7,8 @@ public class Factory{
                 return new FrequencyCommand(repo, context);
             case "author":
                 return new AuthorCommand(repo, context);
+            case "files":
+                return new FilesCommand(repo, context);
             default:
                 throw new NotImplementedException();
         }

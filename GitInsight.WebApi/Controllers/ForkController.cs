@@ -7,8 +7,7 @@ using GitInsight.Entities;
 namespace GitInsight.WebApi.Controllers;
 
 // Repository identifier example
-// https://localhost:7024/analysis/Mlth/BDSAProject/author
-// https://localhost:7024/analysis/Mlth/BDSAProject/frequency
+// https://localhost:7024/forks/Mlth/BDSAProject
 
 [ApiController]
 [Route("[controller]")]
@@ -23,7 +22,6 @@ public class ForkController : ControllerBase
         var repositoryLink = "https://github.com/" + github_user + "/" + repository_name + ".git";
         var forkCommand = new ForkCommand();
         var jsonString =  await forkCommand.getJsonString(githubApiKey, github_user, repository_name);
-        Console.WriteLine(jsonString);
         return jsonString;
         //deleteDirectory(repositoryLocation);
 
