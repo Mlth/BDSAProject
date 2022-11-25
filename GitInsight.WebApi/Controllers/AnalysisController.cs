@@ -2,16 +2,17 @@ using Microsoft.AspNetCore.Mvc;
 using LibGit2Sharp;
 using GitInsight;
 using Octokit;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Identity.Web.Resource;
 using GitInsight.Entities;
 
 namespace GitInsight.WebApi.Controllers;
 
-// Repository identifier example
-// https://localhost:7024/analysis/Mlth/BDSAProject/author
-// https://localhost:7024/analysis/Mlth/BDSAProject/frequency
-
+//[Authorize]
 [ApiController]
 [Route("[controller]")]
+//[RequiredScope(RequiredScopesConfigurationKey = "AzureAdB2C:Scopes")]
 public class AnalysisController : ControllerBase
 {
     private readonly RepositoryContext context;
@@ -44,7 +45,6 @@ public class AnalysisController : ControllerBase
         repo.Dispose();
         //deleteDirectory(repositoryLocation);
         return jsonString;
-
     }
 
     public static void deleteDirectory(string path)

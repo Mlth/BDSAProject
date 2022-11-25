@@ -1,6 +1,10 @@
 namespace GitInsight.WebApi;
 using GitInsight.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.ResponseCompression;
+using Microsoft.Identity.Web;
 
 public class Program
 {
@@ -13,6 +17,8 @@ public class Program
 
         githubApiKey = builder.Configuration["Tokens:gitinsight"];
         connectionString = builder.Configuration["ConnectionString"];
+        builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddMicrosoftIdentityWebApi(builder.Configuration.GetSection("AzureAdB2C"));
 
         builder.Services.AddControllers();
         builder.Services.AddDbContext<RepositoryContext>(opt => opt.UseSqlServer(connectionString));
@@ -35,7 +41,8 @@ public class Program
             .AllowCredentials());               // allow credentials 
         
         app.UseHttpsRedirection();
-
+        app.UseStaticFiles();
+        app.UseRouting();
         app.UseAuthorization();
 
         app.MapControllers();

@@ -4,6 +4,9 @@
 @using System.Threading.Tasks
 @using System.Linq
 @using System
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@attribute [Authorize]
 @inject HttpClient Http
 
 <PageTitle>Analysis</PageTitle>
