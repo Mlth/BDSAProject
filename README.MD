@@ -27,7 +27,7 @@ kør disse kommandoer
 
 dotnet user-secrets init
 dotnet user-secrets set "Tokens:gitinsight" "YOUR_TOKEN"
-dotnet user-secrets set "ConnectionString", "Server=localhost,1433;Database=GitInsightDB4;User Id=SAPassword=<YourStrong@Passw0rd>Trusted_Connection=False;Encrypt=False"
+dotnet user-secrets set "ConnectionString", "Server=localhost,1433;Database=GitInsightDB4;User Id=SA;Password=<YourStrong@Passw0rd>;Trusted_Connection=False;Encrypt=False"
 
 
 API links
