@@ -19,6 +19,8 @@
 <RadzenButton Click=@getAuthorAnalysis Text="Author Analysis" />
 <RadzenButton Click=@getFrequencyAnalysis Text="Frequency Analysis" />
 <RadzenButton Click=@getForkAnalysis Text="Fork Analysis" />
+<RadzenButton Click=@getFileAnalysis Text="File Analysis" />
+
 
 @if (isItAuthor == true)
 {
@@ -98,11 +100,34 @@
     </table>
 }
 
+@if (isItFile == true)
+{
+    @foreach (var commit in analysisCode.fileAnalysis)
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>@commit.identifier</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var change in @commit.changes)
+                {
+                    <tr>
+                        <td>@change</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+}
+
 @code {
     AnalysisCode? analysisCode { get; set; }
     bool isItAuthor;
     bool isItFrequency;
     bool isItFork;
+    bool isItFile;
 
     bool active = false;
 
@@ -116,10 +141,12 @@
         isItAuthor = true;
         isItFrequency = false;
         isItFork = false;
+        isItFile = false;
 
         if(!active && analysisCode?.repository != null) {
             active = true;
-            analysisCode.authorAnalysis = await Http.GetFromJsonAsync<AuthorDTO[]>("https://localhost:7024/analysis/" + analysisCode.repository + "/author");
+            analysisCode.authorAnalysis = await 
+            Http.GetFromJsonAsync<AuthorDTO[]>("https://localhost:7024/analysis/" + analysisCode.repository + "/author");
             active = false;
             analysisCode.authorObjects = analysisCode.convertToAuthorObjects();
         }
@@ -130,6 +157,7 @@
         isItFrequency = true;
         isItAuthor = false;
         isItFork = false;
+        isItFile = false;
 
         if(!active && analysisCode?.repository != null) 
         {
@@ -145,12 +173,29 @@
         isItFork = true;
         isItFrequency = false;
         isItAuthor = false;
+        isItFile = false;
 
         if(!active && analysisCode.repository != null) 
         {
             active = true;
             analysisCode.forkAnalysis = await
             Http.GetFromJsonAsync<ForkDTO[]>("https://localhost:7024/fork/" + analysisCode.repository);
+            active = false;
+        }
+    }
+
+    protected async Task getFileAnalysis()
+    {
+        isItFile = true;
+        isItFork = false;
+        isItFrequency = false;
+        isItAuthor = false;
+
+        if(!active && analysisCode.repository != null)
+        {
+            active = true;
+            analysisCode.fileAnalysis = await 
+            Http.GetFromJsonAsync<FileDTO[]>("https://localhost:7024/analysis/" + analysisCode.repository + "/files");
             active = false;
         }
     }

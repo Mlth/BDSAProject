@@ -7,7 +7,7 @@ using System.Text.Encodings.Web;
 
 public class FilesCommand : AbstractCommand {
 
-    public Dictionary<string,IEnumerable<String>> commitChanges {get; set;} = new Dictionary<string, IEnumerable<string>>();
+    public List<FileDTO> commitChanges {get; set;} = new List<FileDTO>();
 
     public FilesCommand(Repository repo, RepositoryContext context) : base(repo, context){
         
@@ -28,7 +28,8 @@ public class FilesCommand : AbstractCommand {
         {
             changes.Add(ptc.Status +" -> "+ptc.Path);
         }
-        commitChanges.Add(c.Author.Name + " " + c.Author.When.DateTime.ToString(),changes);
+        FileDTO fileDTO = new FileDTO {identifier = c.Author.Name + " on " + c.Author.When.DateTime.ToString(), changes = changes};
+        commitChanges.Add(fileDTO);
         CompareTrees(parentCommit, repo);
     }
 
