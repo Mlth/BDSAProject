@@ -3,6 +3,7 @@ using LibGit2Sharp;
 using GitInsight.Entities.DTOS;
 using GitInsight.Entities;
 using System.Text.Json;
+using System.Text.Encodings.Web;
 
 public class AuthorCommand : AbstractCommand {
 
@@ -25,7 +26,7 @@ public class AuthorCommand : AbstractCommand {
 
     public override string getJsonString()
     {
-        var options = new JsonSerializerOptions { WriteIndented = true };
+        var options = new JsonSerializerOptions { WriteIndented = true, Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping };
         var jsonString = JsonSerializer.Serialize(authors, options);
 
         return jsonString;
