@@ -1,8 +1,5 @@
 @page "/Analysis"
 @using System.Net.Http
-@using System.Net.Http.Json
-@using System.Threading.Tasks
-@using GitInsight.Entities.DTOS
 @inject HttpClient Http
 
 <PageTitle>Analysis</PageTitle>
@@ -12,15 +9,15 @@
 <div class="col-md-6 col-lg-4 p-3">
     <RadzenCard>
         <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.H3">Input a GitHub identifier</RadzenText>
-        <RadzenTextBox Placeholder="github_user/repository_name" Change=@(args => @analysisCode.OnChange(args, "TextBox with placeholder")) Class="w-100" />
+        <RadzenTextBox Placeholder="github_user/repository_name" Change=@(args => @analysisCode.OnChange(args)) Class="w-100" />
     </RadzenCard>
 </div>
 
-<RadzenButton Click=@getAuthorAnalysis Text="Author Analysis" />
-<RadzenButton Click=@getFrequencyAnalysis Text="Frequency Analysis" />
-<RadzenButton Click=@getForkAnalysis Text="Fork Analysis" />
+<RadzenButton Click=@(e => @analysisCode.getAuthorAnalysis(Http)) Text="Author Analysis" />
+<RadzenButton Click=@(e => @analysisCode.getFrequencyAnalysis(Http)) Text="Frequency Analysis" />
+<RadzenButton Click=@(e => @analysisCode.getForkAnalysis(Http)) Text="Fork Analysis" />
 
-@if (isItAuthor == true)
+@if (analysisCode.isItAuthor == true)
 {
     <RadzenChart>
         <RadzenPieSeries Data="@analysisCode.authorObjects" Title="Author Frequency" CategoryProperty="author" ValueProperty="frequency"></RadzenPieSeries>
@@ -50,7 +47,7 @@
     }
 }
 
-@if (isItFrequency == true)
+@if (analysisCode.isItFrequency == true)
 {
     <RadzenChart>
         <RadzenAreaSeries Smooth=true Data="@analysisCode.frequencyAnalysis" CategoryProperty="date" Title="Commits" ValueProperty="frequency" RenderingOrder="1"></RadzenAreaSeries>
@@ -79,7 +76,7 @@
     </table>
 }
 
-@if (isItFork == true)
+@if (analysisCode.isItFork == true)
 {
     <table class="table">
         <thead>
@@ -100,76 +97,8 @@
 
 @code {
     AnalysisCode? analysisCode { get; set; }
-    bool isItAuthor;
-    bool isItFrequency;
-    bool isItFork;
-
-    bool active = false;
-
     protected override void OnInitialized()
     {
         analysisCode = AnalysisCode.Instance;
-    }
-
-    protected async Task getAuthorAnalysis()
-    {
-        isItAuthor = true;
-        isItFrequency = false;
-        isItFork = false;
-
-        if(!active && analysisCode?.repository != null) {
-            active = true;
-            analysisCode.authorAnalysis = await Http.GetFromJsonAsync<AuthorDTO[]>("https://localhost:7024/analysis/" + analysisCode.repository + "/author");
-            active = false;
-            analysisCode.authorObjects = analysisCode.convertToAuthorObjects();
-        }
-    }
-
-    protected async Task getFrequencyAnalysis()
-    {
-        isItFrequency = true;
-        isItAuthor = false;
-        isItFork = false;
-
-        if(!active && analysisCode?.repository != null) 
-        {
-            active = true;
-            analysisCode.frequencyAnalysis = await
-            Http.GetFromJsonAsync<FrequencyDTO[]>("https://localhost:7024/analysis/" + analysisCode.repository + "/frequency");
-            active = false;
-        }
-    }
-
-    protected async Task getForkAnalysis()
-    {
-        isItFork = true;
-        isItFrequency = false;
-        isItAuthor = false;
-
-        if(!active && analysisCode.repository != null) 
-        {
-            active = true;
-            analysisCode.forkAnalysis = await
-            Http.GetFromJsonAsync<ForkDTO[]>("https://localhost:7024/fork/" + analysisCode.repository);
-            active = false;
-        }
-    }
-
-    protected AuthorObject[] convertToAuthorObjects() 
-    {
-        var authorAnalysis = analysisCode.authorAnalysis;
-        var authors = new AuthorObject[authorAnalysis.Length];
-        for(int i = 0; i < authorAnalysis.Length; i++) 
-        {
-            AuthorObject author = new AuthorObject{author = authorAnalysis[i].author, frequency = authorAnalysis[i].frequencies.Sum(item => item.frequency)};
-            authors[i] = author;
-        }
-        return authors;
-    }
-
-    public record AuthorObject 
-    {
-        public string author {get; set;}
-        public int frequency {get; set;}
     }
 }

@@ -6,8 +6,9 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Data.Sqlite;
+using Xunit;
 using System.Threading.Tasks;
-using GitInsight.WebApi.Controllers;
+using GitInsight.Entities;
 
 public class CustomWebApplicationFactory : WebApplicationFactory<WebApi.Program>, IAsyncLifetime
 {

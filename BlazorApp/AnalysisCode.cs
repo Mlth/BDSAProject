@@ -9,6 +9,11 @@ public sealed class AnalysisCode
 {
     private static AnalysisCode instance = null;
     private static readonly object padlock = new object();
+    public bool isItAuthor { get; set; }
+    public bool isItFrequency { get; set; }
+    public bool isItFork { get; set; }
+    public bool active { get; set; }
+    public string? repository { get; set; }
     public AuthorDTO[] authorAnalysis { get; set; }
     public AuthorObject[] authorObjects { get; set; }
     public FrequencyDTO[] frequencyAnalysis { get; set; }
@@ -20,7 +25,6 @@ public sealed class AnalysisCode
         authorObjects = new AuthorObject[] {};
         frequencyAnalysis = new FrequencyDTO[] {};
         forkAnalysis = new ForkDTO[] {}; 
-
     }
 
     public static AnalysisCode Instance 
@@ -38,14 +42,57 @@ public sealed class AnalysisCode
         }
     }
 
-    public string? repository { get; set; }
-
-    public void OnChange(string value, string name)
+    public void OnChange(string newRepository)
     {
-        repository = value;
+        repository = newRepository;
     }
 
-    public AuthorObject[] convertToAuthorObjects() 
+    public async Task getAuthorAnalysis(HttpClient client)
+    {
+        isItAuthor = true;
+        isItFrequency = false;
+        isItFork = false;
+
+        if(!active && repository != null) {
+            active = true;
+            authorAnalysis = await 
+            client.GetFromJsonAsync<AuthorDTO[]>("https://localhost:7024/analysis/" + repository + "/author");
+            active = false;
+            authorObjects = convertToAuthorObjects();
+        }
+    }
+
+    public async Task getFrequencyAnalysis(HttpClient client)
+    {
+        isItFrequency = true;
+        isItAuthor = false;
+        isItFork = false;
+
+        if(!active && repository != null) 
+        {
+            active = true;
+            frequencyAnalysis = await
+            client.GetFromJsonAsync<FrequencyDTO[]>("https://localhost:7024/analysis/" + repository + "/frequency");
+            active = false;
+        }
+    }
+
+    public async Task getForkAnalysis(HttpClient client)
+    {
+        isItFork = true;
+        isItFrequency = false;
+        isItAuthor = false;
+
+        if(!active && repository != null) 
+        {
+            active = true;
+            forkAnalysis = await
+            client.GetFromJsonAsync<ForkDTO[]>("https://localhost:7024/fork/" + repository);
+            active = false;
+        }
+    }
+
+    private AuthorObject[] convertToAuthorObjects() 
     {
         var authors = new AuthorObject[authorAnalysis.Length];
         for(int i = 0; i < authorAnalysis.Length; i++) 
