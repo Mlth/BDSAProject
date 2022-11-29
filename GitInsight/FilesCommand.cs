@@ -7,7 +7,7 @@ using System.Text.Encodings.Web;
 
 public class FilesCommand : AbstractCommand {
 
-    public Dictionary<string,IEnumerable<String>> commitWhenAndWhat {get; set;} = new Dictionary<string, IEnumerable<string>>();
+    public Dictionary<string,IEnumerable<String>> commitChanges {get; set;} = new Dictionary<string, IEnumerable<string>>();
 
     public FilesCommand(Repository repo, RepositoryContext context) : base(repo, context){
         
@@ -29,7 +29,7 @@ public class FilesCommand : AbstractCommand {
             changes.Add(ptc.Status +" -> "+ptc.Path);
             Console.WriteLine(ptc.Status +" -> "+ptc.Path); // Status -> File Path
         }
-        commitWhenAndWhat.Add(c.Author.When.DateTime.ToString(),changes);
+        commitChanges.Add(c.Author + " " + c.Author.When.DateTime.ToString(),changes);
         CompareTrees(parentCommit, repo);
     }
 
@@ -41,7 +41,7 @@ public class FilesCommand : AbstractCommand {
     public override string getJsonString()
     {
         var options = new JsonSerializerOptions { WriteIndented = true, Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping };
-        var jsonString = JsonSerializer.Serialize(commitWhenAndWhat, options);
+        var jsonString = JsonSerializer.Serialize(commitChanges, options);
 
         return jsonString;
     }
