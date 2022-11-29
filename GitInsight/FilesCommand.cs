@@ -27,9 +27,8 @@ public class FilesCommand : AbstractCommand {
         foreach (var ptc in patch)
         {
             changes.Add(ptc.Status +" -> "+ptc.Path);
-            Console.WriteLine(ptc.Status +" -> "+ptc.Path); // Status -> File Path
         }
-        commitChanges.Add(c.Author + " " + c.Author.When.DateTime.ToString(),changes);
+        commitChanges.Add(c.Author.Name + " " + c.Author.When.DateTime.ToString(),changes);
         CompareTrees(parentCommit, repo);
     }
 
