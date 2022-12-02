@@ -221,7 +221,54 @@ public class GitInsightCMDTest : IDisposable
         Assert.Equal(commitDateTime2.Date.ToShortDateString(), command.authors.ToArray()[1].frequencies.ToArray()[0].date.ToShortDateString());
         Assert.Equal(2, command.authors.Count());
     }
+    [Fact]
+    public void Single_commit_on_new_repo_returns_dic_with_no_entries_when_using_files_command(){
+        //Arrange
+        var commitDateTime = DateTimeOffset.Now;
+        var author = new Signature("luel", "luel@itu.dk", commitDateTime);
 
+        //Act
+        repo.Commit("First commit", author, author, new CommitOptions(){ AllowEmptyCommit = true });
+        var command = (FilesCommand)Factory.getCommandAndIncjectDependencies("files", repo, context);
+        command.processRepo();
+
+        //Assert
+        Assert.Equal(0, command.commitChanges.Count());
+    }
+    [Fact]
+    public void Two_commits_on_new_repo_returns_dic_with_one_entry_when_using_files_command(){
+        //Arrange
+        var author = new Signature("luel", "luel@itu.dk", DateTimeOffset.Now);
+        var author2 = new Signature("luel2", "luel3", DateTimeOffset.Now);
+
+        //Act
+        repo.Commit("First commit", author, author, new CommitOptions(){ AllowEmptyCommit = true });
+        repo.Commit("Second commit", author2, author2, new CommitOptions(){ AllowEmptyCommit = true });
+        var command = (FilesCommand)Factory.getCommandAndIncjectDependencies("files", repo, context);
+        command.processRepo();
+
+        //Assert
+        Assert.Equal(1, command.commitChanges.Count());
+    }
+    [Fact]
+    public void Multiple_commits_on_new_repo_returns_dic_with_one_less_entry_than_commits_when_using_files_command(){
+        //Arrange
+        var author = new Signature("luel", "luel@itu.dk", DateTimeOffset.Now);
+        var author2 = new Signature("luel2", "luel2@itu.dk", DateTimeOffset.Now);
+        var author3 = new Signature("luel3", "luel3@itu.dk", DateTimeOffset.Now);
+        var author4 = new Signature("luel4", "luel4@itu.dk", DateTimeOffset.Now);
+
+        //Act
+        repo.Commit("First commit", author, author, new CommitOptions(){ AllowEmptyCommit = true });
+        repo.Commit("Second commit", author2, author2, new CommitOptions(){ AllowEmptyCommit = true });
+        repo.Commit("Third commit", author3, author3, new CommitOptions(){ AllowEmptyCommit = true });
+        repo.Commit("Fourth commit", author4, author4, new CommitOptions(){ AllowEmptyCommit = true });
+        var command = (FilesCommand)Factory.getCommandAndIncjectDependencies("files", repo, context);
+        command.processRepo();
+
+        //Assert
+        Assert.Equal(3, command.commitChanges.Count());
+    }
 
     public void Dispose(){
         repo.Dispose();

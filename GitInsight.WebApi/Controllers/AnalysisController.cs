@@ -29,9 +29,12 @@ public class AnalysisController : ControllerBase
     public async Task<string> Get(string github_user, string repository_name, string command)
     {
         var repositoryLink = "https://github.com/" + github_user + "/" + repository_name + ".git";
-        var path = Directory.GetCurrentDirectory();
-        
-        var repositories = Directory.GetParent(Directory.GetCurrentDirectory()) + "/Repositories/";
+        var currentPath = Directory.GetCurrentDirectory();
+
+        var repositories = Directory.GetParent(currentPath) + "/Repositories/";
+        if(!Directory.Exists(repositories)){
+            Directory.CreateDirectory(repositories);
+        }
         var repositoryLocation = repositories + repository_name;
         if(Directory.GetDirectories(repositories, repository_name).Length < 1){
             fetcher.cloneRepository(repositoryLink, repositoryLocation);
@@ -43,7 +46,9 @@ public class AnalysisController : ControllerBase
         chosenCommand.processRepo();
         var jsonString = chosenCommand.getJsonString();
         repo.Dispose();
+
         //deleteDirectory(repositoryLocation);
+        
         return jsonString;
     }
 

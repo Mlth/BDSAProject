@@ -6,6 +6,7 @@
 @using System
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@using GitInsight.Entities.DTOS
 @attribute [Authorize]
 @inject HttpClient Http
 
@@ -13,80 +14,146 @@
 
 <h1>Analysis</h1>
 
-<div class="row px-3">
-        <div class="col-md-6 col-lg-4 p-3">
-            <RadzenCard>
-                <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.H3">Input your repository:</RadzenText>
-                <RadzenTextBox Change=@(args => OnChange(args, "TextBox")) Class="w-100" />
-            </RadzenCard>
-        </div>
+<div class="col-md-6 col-lg-4 p-3">
+    <RadzenCard>
+        <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.H3">Input a GitHub identifier</RadzenText>
+        <RadzenTextBox Placeholder="github_user/repository_name" Change=@(args => @analysisCode.OnChange(args, "TextBox with placeholder")) Class="w-100" />
+    </RadzenCard>
 </div>
 
 <RadzenButton Click=@getAuthorAnalysis Text="Author Analysis" />
 <RadzenButton Click=@getFrequencyAnalysis Text="Frequency Analysis" />
+<RadzenButton Click=@getForkAnalysis Text="Fork Analysis" />
+<RadzenButton Click=@getFileAnalysis Text="File Analysis" />
+
 
 @if (isItAuthor == true)
 {
-     <RadzenChart>
-        <RadzenPieSeries Data="@authorObjects" Title="Author Frequency" CategoryProperty="author" ValueProperty="frequency">
-        </RadzenPieSeries>
+    <RadzenChart>
+        <RadzenPieSeries Data="@analysisCode.authorObjects" Title="Author Frequency" CategoryProperty="author" ValueProperty="frequency"></RadzenPieSeries>
         <RadzenValueAxis>
             <RadzenGridLines Visible="true" />
             <RadzenAxisTitle Text="Commit Frequency" />
         </RadzenValueAxis>
     </RadzenChart>
-    @foreach (var author in authorAnalysis)
+    
+    @foreach (var author in analysisCode.authorAnalysis)
     {
-        <p>@author.author</p>
-        @foreach (var freq in @author.frequencies)
-        {
-            <p>@freq.frequency commits on @freq.date.ToString("MMMM dd, yyyy")</p>
-        }
-        
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>@author.author</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var freq in @author.frequencies)
+                {
+                    <tr>
+                        <td>@freq.frequency commits on @freq.date.ToString("dd/MM/yyyy")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
     }
 }
 
 @if (isItFrequency == true)
 {
     <RadzenChart>
-        <RadzenAreaSeries Smooth=true Data="@frequencyAnalysis" CategoryProperty="date" ValueProperty="frequency"
-        RenderingOrder="1">
-        </RadzenAreaSeries>
+        <RadzenAreaSeries Smooth=true Data="@analysisCode.frequencyAnalysis" CategoryProperty="date" Title="Commits" ValueProperty="frequency" RenderingOrder="1"></RadzenAreaSeries>
         <RadzenValueAxis>
             <RadzenGridLines Visible="true" />
             <RadzenAxisTitle Text="Commit Frequency" />
         </RadzenValueAxis>
     </RadzenChart>
 
-    @foreach (var freq in @frequencyAnalysis)
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Number of commits</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var freq in @analysisCode.frequencyAnalysis)
+        {
+            <tr>
+                <td>@freq.frequency</td>
+                <td>@freq.date.ToString("dd/MM/yyyy")</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+
+@if (isItFork == true)
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Forks</th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var fork in @analysisCode.forkAnalysis)
+        {
+            <tr>
+                <td>@fork.url</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+
+@if (isItFile == true)
+{
+    @foreach (var commit in analysisCode.fileAnalysis)
     {
-        <p>@freq.frequency commits on @freq.date.ToString("MMMM dd, yyyy")</p>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>@commit.identifier</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var change in @commit.changes)
+                {
+                    <tr>
+                        <td>@change</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
     }
 }
 
-
 @code {
-    private AuthorDTO[] authorAnalysis = new AuthorDTO[] { };
-    private AuthorObject[] authorObjects = new AuthorObject[] {};
-    private FrequencyDTO[] frequencyAnalysis = new FrequencyDTO[] { };
-
-    private string repository;
-
+    AnalysisCode? analysisCode { get; set; }
     bool isItAuthor;
     bool isItFrequency;
+    bool isItFork;
+    bool isItFile;
 
     bool active = false;
+
+    protected override void OnInitialized()
+    {
+        analysisCode = AnalysisCode.Instance;
+    }
 
     protected async Task getAuthorAnalysis()
     {
         isItAuthor = true;
         isItFrequency = false;
+        isItFork = false;
+        isItFile = false;
 
-        if(!active && repository != null) {
+        if(!active && analysisCode?.repository != null) {
             active = true;
-            authorAnalysis = await Http.GetFromJsonAsync<AuthorDTO[]>("https://localhost:7024/analysis/" + repository + "/author");
+            analysisCode.authorAnalysis = await 
+            Http.GetFromJsonAsync<AuthorDTO[]>("https://localhost:7024/analysis/" + analysisCode.repository + "/author");
             active = false;
-            authorObjects = convertToAuthorObjects();
+            analysisCode.authorObjects = analysisCode.convertToAuthorObjects();
         }
     }
 
@@ -94,44 +161,65 @@
     {
         isItFrequency = true;
         isItAuthor = false;
+        isItFork = false;
+        isItFile = false;
 
-        if(!active && repository != null) {
+        if(!active && analysisCode?.repository != null) 
+        {
             active = true;
-            frequencyAnalysis = await
-            Http.GetFromJsonAsync<FrequencyDTO[]>("https://localhost:7024/analysis/" + repository + "/frequency");
+            analysisCode.frequencyAnalysis = await
+            Http.GetFromJsonAsync<FrequencyDTO[]>("https://localhost:7024/analysis/" + analysisCode.repository + "/frequency");
             active = false;
         }
     }
 
-    protected AuthorObject[] convertToAuthorObjects() {
+    protected async Task getForkAnalysis()
+    {
+        isItFork = true;
+        isItFrequency = false;
+        isItAuthor = false;
+        isItFile = false;
+
+        if(!active && analysisCode.repository != null) 
+        {
+            active = true;
+            analysisCode.forkAnalysis = await
+            Http.GetFromJsonAsync<ForkDTO[]>("https://localhost:7024/fork/" + analysisCode.repository);
+            active = false;
+        }
+    }
+
+    protected async Task getFileAnalysis()
+    {
+        isItFile = true;
+        isItFork = false;
+        isItFrequency = false;
+        isItAuthor = false;
+
+        if(!active && analysisCode.repository != null)
+        {
+            active = true;
+            analysisCode.fileAnalysis = await 
+            Http.GetFromJsonAsync<FileDTO[]>("https://localhost:7024/analysis/" + analysisCode.repository + "/files");
+            active = false;
+        }
+    }
+
+    protected AuthorObject[] convertToAuthorObjects() 
+    {
+        var authorAnalysis = analysisCode.authorAnalysis;
         var authors = new AuthorObject[authorAnalysis.Length];
-        for(int i = 0; i < authorAnalysis.Length; i++) {
+        for(int i = 0; i < authorAnalysis.Length; i++) 
+        {
             AuthorObject author = new AuthorObject{author = authorAnalysis[i].author, frequency = authorAnalysis[i].frequencies.Sum(item => item.frequency)};
             authors[i] = author;
         }
         return authors;
     }
 
-    void OnChange(string value, string name)
-    {
-        repository = value;
-    }
-
-    public class AuthorDTO
-    {
-        public string author { get; set; }
-        public List<FrequencyDTO> frequencies { get; set; } = new List<FrequencyDTO>();
-    }
-
-    public class AuthorObject 
+    public record AuthorObject 
     {
         public string author {get; set;}
         public int frequency {get; set;}
-    }
-
-    public class FrequencyDTO
-    {
-        public int frequency { get; set; }
-        public DateTime date { get; set; }
     }
 }
