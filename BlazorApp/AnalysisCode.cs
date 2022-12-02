@@ -58,15 +58,14 @@ public sealed class AnalysisCode
         isItFile = false;
 
         if(!active && repository != null) {
-            active = true;
-            authorAnalysis = await 
+            active = true; 
             if(!testing)
             {
-                client.GetFromJsonAsync<AuthorDTO[]>("analysis/" + repository + "/author");
+                 authorAnalysis = await client.GetFromJsonAsync<AuthorDTO[]>("analysis/" + repository + "/author");
             }
             else 
             {
-                client.GetFromJsonAsync<AuthorDTO[]>("https://localhost:7024/analysis/" + repository + "/author");
+                 authorAnalysis = await client.GetFromJsonAsync<AuthorDTO[]>("https://localhost:7024/analysis/" + repository + "/author");
             }
             active = false;
             authorObjects = convertToAuthorObjects();
