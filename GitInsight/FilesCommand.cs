@@ -7,6 +7,8 @@ using System.Text.Encodings.Web;
 
 public class FilesCommand : AbstractCommand {
 
+    int commitCounter;
+
     public List<FileDTO> commitChanges {get; set;} = new List<FileDTO>();
 
     public FilesCommand(Repository repo, RepositoryContext context) : base(repo, context){
@@ -14,6 +16,10 @@ public class FilesCommand : AbstractCommand {
     }
 
     public void CompareTrees(LibGit2Sharp.Commit c, LibGit2Sharp.Repository repo){
+        commitCounter++;
+        if(commitCounter>250){
+            return;
+        }
         if(c.Parents.ToArray().Length == 0){
             return;
         }
