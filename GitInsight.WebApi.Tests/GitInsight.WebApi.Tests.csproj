@@ -28,6 +28,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\GitInsight.WebApi\WebApi.csproj" />
+    <ProjectReference Include="..\TestDependencies\TestDependencies.csproj" />
   </ItemGroup>
 
 </Project>
