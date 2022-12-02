@@ -40,20 +40,7 @@ public class AnalysisTests : IClassFixture<CustomWebApplicationFactory>
         Assert.Equal("mlth", analysisCode.authorAnalysis[1].author);
         Assert.Equivalent(new List<FrequencyDTO>{new FrequencyDTO {date = commitDateTime1, frequency = 1}}, analysisCode.authorAnalysis[1].frequencies);
     }
-
-    [Fact]
-    public async Task TextBox_OnChange_Changes_Repository_Value()
-    {
-        using var ctx = new TestContext();
-        var component = ctx.RenderComponent<Analysis>();
-        var radzenComponent =  component.FindComponent<RadzenTextBox>().Instance;
-
-        await component.InvokeAsync(async () => 
-        await radzenComponent.Change.InvokeAsync("TestUser/TestRepo2"));
-
-        Assert.Equal("TestUser/TestRepo2", analysisCode.repository);
-    }
-
+    
     [Fact]
     public void TextBox_Renders_ValueParameter()
     {
