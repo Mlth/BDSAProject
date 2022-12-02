@@ -12,6 +12,7 @@ public sealed class AnalysisCode
     public bool isItAuthor { get; set; }
     public bool isItFrequency { get; set; }
     public bool isItFork { get; set; }
+    public bool isItFile { get; set; }
     public bool active { get; set; }
     public string? repository { get; set; }
     public AuthorDTO[] authorAnalysis { get; set; }
@@ -54,6 +55,7 @@ public sealed class AnalysisCode
         isItAuthor = true;
         isItFrequency = false;
         isItFork = false;
+        isItFile = false;
 
         if(!active && repository != null) {
             active = true;
@@ -69,6 +71,7 @@ public sealed class AnalysisCode
         isItFrequency = true;
         isItAuthor = false;
         isItFork = false;
+        isItFile = false;
 
         if(!active && repository != null) 
         {
@@ -84,12 +87,29 @@ public sealed class AnalysisCode
         isItFork = true;
         isItFrequency = false;
         isItAuthor = false;
+        isItFile = false;
 
         if(!active && repository != null) 
         {
             active = true;
             forkAnalysis = await
             client.GetFromJsonAsync<ForkDTO[]>("https://localhost:7024/fork/" + repository);
+            active = false;
+        }
+    }
+
+    public async Task getFileAnalysis(HttpClient client)
+    {
+        isItFile = true;
+        isItFork = false;
+        isItFrequency = false;
+        isItAuthor = false;
+
+        if(!active && repository != null)
+        {
+            active = true;
+            fileAnalysis = await 
+            client.GetFromJsonAsync<FileDTO[]>("https://localhost:7024/analysis/" + repository + "/files");
             active = false;
         }
     }

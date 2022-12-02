@@ -1,5 +1,7 @@
 @page "/Analysis"
 @using System.Net.Http
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
 @attribute [Authorize]
 @inject HttpClient Http
 
@@ -17,6 +19,7 @@
 <RadzenButton Click=@(e => @analysisCode.getAuthorAnalysis(Http)) Text="Author Analysis" />
 <RadzenButton Click=@(e => @analysisCode.getFrequencyAnalysis(Http)) Text="Frequency Analysis" />
 <RadzenButton Click=@(e => @analysisCode.getForkAnalysis(Http)) Text="Fork Analysis" />
+<RadzenButton Click=@(e => @analysisCode.getFileAnalysis(Http)) Text="File Analysis" />
 
 @if (analysisCode.isItAuthor == true)
 {
@@ -96,7 +99,7 @@
     </table>
 }
 
-@if (isItFile == true)
+@if (analysisCode.isItFile == true)
 {
     @foreach (var commit in analysisCode.fileAnalysis)
     {
