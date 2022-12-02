@@ -1,5 +1,6 @@
 @page "/Analysis"
 @using System.Net.Http
+@attribute [Authorize]
 @inject HttpClient Http
 
 <PageTitle>Analysis</PageTitle>
@@ -95,8 +96,31 @@
     </table>
 }
 
+@if (isItFile == true)
+{
+    @foreach (var commit in analysisCode.fileAnalysis)
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>@commit.identifier</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var change in @commit.changes)
+                {
+                    <tr>
+                        <td>@change</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+}
+
 @code {
     AnalysisCode? analysisCode { get; set; }
+    
     protected override void OnInitialized()
     {
         analysisCode = AnalysisCode.Instance;
