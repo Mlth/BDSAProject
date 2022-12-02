@@ -50,7 +50,7 @@ public sealed class AnalysisCode
         repository = newRepository;
     }
 
-    public async Task getAuthorAnalysis(HttpClient client)
+    public async Task getAuthorAnalysis(HttpClient client, bool testing)
     {
         isItAuthor = true;
         isItFrequency = false;

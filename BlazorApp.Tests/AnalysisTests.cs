@@ -33,7 +33,7 @@ public class AnalysisTests : IClassFixture<CustomWebApplicationFactory>
 
         await component.InvokeAsync(async () => 
         await radzenComponent.Change.InvokeAsync("TestUser/TestRepo2"));
-        await analysisCode.getAuthorAnalysis(client);
+        await analysisCode.getAuthorAnalysis(client, true);
 
         Assert.Equal("aarv", analysisCode.authorAnalysis[0].author);
         Assert.Equivalent(new List<FrequencyDTO>{new FrequencyDTO {date = commitDateTime2, frequency = 1}, new FrequencyDTO {date = commitDateTime1, frequency = 1}}, analysisCode.authorAnalysis[0].frequencies);

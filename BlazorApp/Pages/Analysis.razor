@@ -16,7 +16,7 @@
     </RadzenCard>
 </div>
 
-<RadzenButton Click=@(e => @analysisCode.getAuthorAnalysis(Http)) Text="Author Analysis" />
+<RadzenButton Click=@(e => @analysisCode.getAuthorAnalysis(Http, false)) Text="Author Analysis" />
 <RadzenButton Click=@(e => @analysisCode.getFrequencyAnalysis(Http)) Text="Frequency Analysis" />
 <RadzenButton Click=@(e => @analysisCode.getForkAnalysis(Http)) Text="Fork Analysis" />
 <RadzenButton Click=@(e => @analysisCode.getFileAnalysis(Http)) Text="File Analysis" />
