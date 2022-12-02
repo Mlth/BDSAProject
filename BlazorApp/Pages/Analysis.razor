@@ -2,7 +2,12 @@
 @using System.Net.Http
 @using System.Net.Http.Json
 @using System.Threading.Tasks
+@using System.Linq
+@using System
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
 @using GitInsight.Entities.DTOS
+@attribute [Authorize]
 @inject HttpClient Http
 
 <PageTitle>Analysis</PageTitle>
