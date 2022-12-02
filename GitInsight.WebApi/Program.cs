@@ -47,7 +47,7 @@ public class Program
 
         app.MapControllers();
 
-        app.MapGet("/", () => githubApiKey);
+        //app.MapGet("/", () => githubApiKey);
         app.MapGet("/", () => connectionString);
 
         app.Run();
