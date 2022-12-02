@@ -4,6 +4,7 @@ using LibGit2Sharp;
 //If changes are made to the cloneRepository method, remember to delete the two TestRepo folders in the repository folder, as they are not updated otherwise.
 public class TestGitFetcher : IGitFetcher {
     public void cloneRepository(string repositoryPath, string newDir){
+        Directory.CreateDirectory(newDir);
         var repo = new Repository(Repository.Init(newDir));
 
         var commitDateTime1 = new DateTime(2022, 10, 01);
