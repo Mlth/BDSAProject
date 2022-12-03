@@ -5,8 +5,6 @@ public class DBRepoRepositoryTests : IDisposable
     private readonly RepositoryContext context;
     private readonly DBRepoRepository repository;
 
-    
-
     public DBRepoRepositoryTests(){
         var connection = new SqliteConnection("Filename=:memory:");
         connection.Open();

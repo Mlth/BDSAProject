@@ -17,6 +17,7 @@ public abstract class AbstractCommand {
         this.context = context;
         DBRepository = new DBRepoRepository(context);
     }
+    
     public void processRepo(){
         if (repoExists()){
             if (needsUpdate()){
