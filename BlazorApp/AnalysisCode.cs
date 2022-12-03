@@ -50,7 +50,7 @@ public sealed class AnalysisCode
         repository = newRepository;
     }
 
-    public async Task getAuthorAnalysis(HttpClient client, bool testing)
+    public async Task getAuthorAnalysis(HttpClient client)
     {
         isItAuthor = true;
         isItFrequency = false;
@@ -59,14 +59,7 @@ public sealed class AnalysisCode
 
         if(!active && repository != null) {
             active = true; 
-            if(!testing)
-            {
-                 authorAnalysis = await client.GetFromJsonAsync<AuthorDTO[]>("analysis/" + repository + "/author");
-            }
-            else 
-            {
-                 authorAnalysis = await client.GetFromJsonAsync<AuthorDTO[]>("https://localhost:7024/analysis/" + repository + "/author");
-            }
+            authorAnalysis = await client.GetFromJsonAsync<AuthorDTO[]>("https://localhost:7024/analysis/" + repository + "/author");
             active = false;
             authorObjects = convertToAuthorObjects();
         }
